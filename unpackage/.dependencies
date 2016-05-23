@@ -1,0 +1,9 @@
+{
+  "plus/music.html": {
+    "href": "plus/music.html",
+    "resources": [
+      "fonts/mui.ttf"
+    ],
+    "priority": 0
+  }
+}

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>百家+</title>
+		<script src="../js/jquery.min.js"></script>
+		<script src="../js/mui.min.js"></script>
+		<script src="../js/juicer-min.js"></script>
+	    <script type="text/javascript" src="../js/common.js"></script>
+	    <script type="text/javascript" src="../js/AudioPlayer.js"></script>
+	    <link href="../css/mui.min.css" rel="stylesheet"/>
+	    <link href="../css/music.css" rel="stylesheet"/>
+	    <script type="text/javascript" charset="UTF-8">
+	      	mui.init();
+	    </script>
+	</head>
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">乐开心</h1>
+		</header>
+		<div class="mui-content" id="baijia">
+			
+		</div>
+	</body>
+	<script>
+		mui.plusReady(function(){
+	        var self = plus.webview.currentWebview();
+			var id = self.bjaid;
+			console.log(id);
+			
+			
+			$.ajax({
+				type:"get",
+				url:"http://www.80shihua.com/app_backend/getbaijia_content.php?id="+id,
+				dataType : 'html',
+				async:true,
+				success:function(result){
+					console.log(result);
+					$("#baijia").html(result);
+				}
+			});
+			
+	  	});
+	</script>
+</html>

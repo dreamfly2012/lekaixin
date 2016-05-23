@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>乐开心</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<!--标准mui.css-->
+		<link rel="stylesheet" href="css/mui.min.css">
+		<!--App自定义的css-->
+		<link rel="stylesheet" type="text/css" href="css/app.css"/>
+		<style>
+			.title{
+				margin: 20px 15px 10px;
+				color: #6d6d72;
+				font-size: 15px;
+			}
+			
+			.oa-contact-cell.mui-table .mui-table-cell {
+				padding: 11px 0;
+				vertical-align: middle;
+			}
+			
+			.oa-contact-cell {
+				position: relative;
+				margin: -11px 0;
+			}
+	
+			.oa-contact-avatar {
+				width: 75px;
+			}
+			.oa-contact-avatar img {
+				border-radius: 50%;
+			}
+			.oa-contact-content {
+				width: 100%;
+			}
+			.oa-contact-name {
+				margin-right: 20px;
+			}
+			.oa-contact-name, oa-contact-position {
+				float: left;
+			}
+		</style>
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">乐开心</h1>
+		</header>
+		<nav class="mui-bar mui-bar-tab">
+			<a class="mui-tab-item mui-active" href="#tabbar">
+				<span class="mui-icon mui-icon-home"></span>
+				<span class="mui-tab-label">笑话</span>
+			</a>
+			<a class="mui-tab-item" href="#tabbar-with-radio">
+				<span class="mui-icon mui-icon-email"></span>
+				<span class="mui-tab-label">电台</span>
+			</a>
+			<a class="mui-tab-item" href="#tabbar-with-baijia">
+				<span class="mui-icon mui-icon-contact"></span>
+				<span class="mui-tab-label">百家</span>
+			</a>
+			<a class="mui-tab-item" href="#tabbar-with-about">
+				<span class="mui-icon mui-icon-gear"></span>
+				<span class="mui-tab-label">关于</span>
+			</a>
+		</nav>
+		<div class="mui-content">
+			
+			
+			<div id="tabbar" data-page="2" class="mui-control-content mui-scroll-wrapper mui-active">
+				<div class="title">笑话</div>
+				<ul class="mui-table-view">
+					<script id="tpl" type="text/template">
+					    {@each joke as it,index}
+					    <li class="mui-table-view-cell">
+							<h4>
+								${it.title}
+							</h4>
+							<span>${it.text}</span>
+						</li>
+						{@/each}
+					</script>
+				</ul>
+			</div>
+			<div id="tabbar-with-radio" class="mui-control-content">
+				<div class="title">豆瓣电台</div>
+				
+				<ul class="mui-table-view mui-table-view-chevron">
+					<script id="music_tpl" type="text/template">
+						{@each channel as it,index}
+							<li class="mui-table-view-cell"><a href="javascript:;" class="mui-navigate-right jump_music_detail" data-channelid="${it.channel_id}">${it.name}</a></li>
+						{@/each}
+					</script>
+					
+				</ul>
+				
+			</div>
+			<div id="tabbar-with-baijia" class="mui-control-content">
+				<div class="title">
+					百家
+				</div>
+				<ul class="mui-table-view">
+					<script id="baijia_tpl" type="text/template">
+					{@each baijia as it,index}
+					<li class="mui-table-view-cell mui-media">
+						<a href="javascript:;" class="jump_baijia_detail" data-bjaid="${it.ID}">
+							<img class="mui-media-object mui-pull-left" src="http://www.80shihua.com/app_backend/getimage.php?url=${it.m_image_url}">
+							<div class="mui-media-body">
+								${it.m_title}
+								<p class='mui-ellipsis'>${it.m_summary}</p>
+							</div>
+						</a>
+					</li>
+					{@/each}
+					</script>
+				</ul>
+			</div>
+			<div id="tabbar-with-about" class="mui-control-content">
+				<iframe src="http://www.80shihua.com/app_backend/rabit.php" style="width: 100%;min-height: 600px;overflow: hidden;"></iframe>-->
+			</div>
+		</div>
+	</body>
+	<script src="js/jquery.min.js"></script>
+	<script src="js/mui.min.js"></script>
+	<script src="js/juicer-min.js"></script>
+	
+	<script>
+		var access_host = 'http://www.80shihua.com/app_backend/';
+		var baijia_url = 'http://baijia.baidu.com/ajax/labellatestarticle?page=1&pagesize=20&prevarticalid=463752&flagtogether=1&labelid=3';
+		var music_url = 'https://www.douban.com/j/app/radio/people?version=100&app_name=radio_android&type=n&channel=';
+		var channel_url = 'https://www.douban.com/j/app/radio/channels';
+	</script>
+
+		
+
+	<script>
+		/**
+		 * 下拉刷新具体业务实现
+		 */
+		function pulldownRefresh() {
+			var page = parseInt($('#tabbar').attr('data-page'));
+    
+      		setTimeout(function() {
+				$.ajax({
+					type:"get",
+					url:access_host+"getjoke.php?p=" + page,
+					dataType : 'json',
+					async:true,
+					success:function(result){
+						var data = {
+							joke : result
+						};
+						var tpl = document.getElementById('tpl').innerHTML;
+						var jokecontent = juicer(tpl, data);
+						$("#tabbar").find('.mui-table-view').append(jokecontent);
+						$('#tabbar').attr('data-page',page+1);
+					}
+				});
+			}, 1500);
+		}
+		var count = 0;
+		/**
+		 * 上拉加载具体业务实现
+		 */
+		function pullupRefresh() {
+			
+			setTimeout(function() {
+      			var page = parseInt($('#tabbar').attr('data-page'));
+      			mui('#tabbar').pullRefresh().endPullupToRefresh(false);
+				$.ajax({
+					type:"get",
+					url:access_host+"getjoke.php?p=" + page,
+					dataType : 'json',
+					async:true,
+					success:function(result){
+						var data = {
+							joke : result
+						};
+						var tpl = document.getElementById('tpl').innerHTML;
+						var jokecontent = juicer(tpl, data);
+						$(jokecontent).insertBefore($('#tabbar').find('.mui-pull-bottom-pocket'));
+						$('#tabbar').attr('data-page',page+1);
+					}
+				});
+			}, 1500);
+		}
+	
+		mui.init({
+			swipeBack:true ,//启用右滑关闭功能,
+			pullRefresh: {
+				container: '#tabbar',
+//				down: {
+//					contentrefresh: '正在加载...',
+//					callback: pulldownRefresh
+//				},
+				up: {
+					contentrefresh: '正在加载...',
+					callback: pullupRefresh
+				}
+			}
+			
+//			
+		});
+		
+		$.ajax({
+			type:"get",
+			url:access_host+"getbaijia.php",
+			dataType : 'json',
+			async:true,
+			success:function(result){
+				var data = {
+					baijia : result
+				};
+				var tpl = document.getElementById('baijia_tpl').innerHTML;
+				var baijiacontent = juicer(tpl, data);
+				$("#tabbar-with-baijia").find('.mui-table-view').prepend(baijiacontent);
+			}
+		});
+		
+		$.ajax({
+			type:"get",
+			url:access_host+"getjoke.php",
+			dataType : 'json',
+			async:true,
+			success:function(result){
+				var data = {
+					joke : result
+				};
+				var tpl = document.getElementById('tpl').innerHTML;
+				var jokecontent = juicer(tpl, data);
+				$("#tabbar").find('.mui-table-view').prepend(jokecontent);
+			}
+		});
+		
+		//$("#tabbar-with-about").load('http://www.80shihua.com/app_backend/rabit.php');
+		
+//		$.ajax({
+//			type:"get",
+//			url:'http://www.80shihua.com/app_backend/rabit.php',
+//			dataType : 'html',
+//			async:true,
+//			success:function(result){
+//				
+//			}
+//		});
+//		
+		
+		var data = {
+		    channel: [
+	            {
+	                "name": "私人兆赫",
+	                "seq_id": 0,
+	                "abbr_en": "My",
+	                "channel_id": 0,
+	                "name_en": "Personal Radio"
+	            },
+	            {
+	                "name": "华语",
+	                "seq_id": 1,
+	                "abbr_en": "CH",
+	                "channel_id": 1,
+	                "name_en": "Chinese"
+	            },
+	            {
+	                "name": "欧美",
+	                "seq_id": 2,
+	                "abbr_en": "EN",
+	                "channel_id": 2,
+	                "name_en": "Euro-American"
+	            }
+	        ]
+		};
+		var tpl = document.getElementById('music_tpl').innerHTML;
+		var jokecontent = juicer(tpl, data);
+		$("#tabbar-with-radio").find('.mui-table-view').html(jokecontent);
+		
+		
+		if (mui.os.plus) {
+			mui.plusReady(function() {
+				setTimeout(function() {
+					mui('#tabbar').pullRefresh().pullupLoading();
+				}, 1000);
+
+			});
+		} else {
+			mui.ready(function() {
+				mui('#tabbar').pullRefresh().pullupLoading();
+			});
+		}
+	
+		
+	
+		$(document).ready(function(){
+			$(document).on('click','.jump_music_detail',function(){
+				var channelid = $(this).attr('data-channelid');
+				
+				mui.openWindow({
+					url:'plus/music.html',
+					id:1,
+					extras:{
+						channelid:channelid
+					}
+				})
+				
+			});
+			
+			//
+			$(document).on('click','.jump_baijia_detail',function(){
+				var bjaid = $(this).attr('data-bjaid');
+				
+				mui.openWindow({
+					url:'plus/baijia_detail.html',
+					id:2,
+					extras:{
+						bjaid:bjaid
+					}
+				})
+				
+			});
+		});
+		
+		
+		
+		
+		
+	</script>
+</html>

@@ -1,0 +1,40 @@
+{
+	"index.html": {
+		"resources": [
+			"js/juicer-min.js",
+			"js/jquery.min.js",
+			"js/mui.min.js",
+			"css/app.css",
+			"fonts/mui.ttf",
+			"css/mui.min.css"
+		],
+		"refer": [
+			"plus/music.html",
+			"plus/baijia_detail.html"
+		]
+	},
+	"plus/music.html": {
+		"resources": [
+			"css/music.css",
+			"js/common.js",
+			"js/AudioPlayer.js",
+			"js/juicer-min.js",
+			"js/jquery.min.js",
+			"js/mui.min.js",
+			"css/mui.min.css",
+			"fonts/icomoon.woff"
+		]
+	},
+	"plus/baijia_detail.html": {
+		"resources": [
+			"css/music.css",
+			"js/common.js",
+			"js/AudioPlayer.js",
+			"js/juicer-min.js",
+			"js/jquery.min.js",
+			"js/mui.min.js",
+			"css/mui.min.css",
+			"fonts/mui.ttf"
+		]
+	}
+}

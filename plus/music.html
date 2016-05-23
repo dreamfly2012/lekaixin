@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <title>音乐播放页面</title>
+    <script src="../js/jquery.min.js"></script>
+	<script src="../js/mui.min.js"></script>
+	<script src="../js/juicer-min.js"></script>
+    <script type="text/javascript" src="../js/common.js"></script>
+    <script type="text/javascript" src="../js/AudioPlayer.js"></script>
+    <link href="../css/mui.min.css" rel="stylesheet"/>
+    <link href="../css/music.css" rel="stylesheet"/>
+    <script type="text/javascript" charset="UTF-8">
+      	mui.init();
+    </script>
+</head>
+<body>
+	<header class="mui-bar mui-bar-nav">
+		<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+		<h1 class="mui-title">乐开心</h1>
+	</header>
+	<div class="mui-content">
+		<ul id="content" class="mui-table-view">
+			<script id="tpl" type="text/template">
+			{@each channel as it,index}
+			<style>
+			.music_info{
+				background: -webkit-linear-gradient(top,rgba(0,0,0,0.4),rgba(0,0,0,0.4)) no-repeat left top,url(${it.picture}) no-repeat left top;
+				background-size:cover;
+			}
+			</style>
+			<div id="myAudio" style="margin:0 auto;">
+				<audio>
+					<source title="${it.artist}- ${it.title}" src="${it.url}" />
+				</audio>
+			</div>
+			{@/each}
+			</script>
+		</ul>
+		
+		
+	</div>
+	
+	
+	
+	
+	<script>
+		var access_host = 'http://www.80shihua.com/app_backend/';
+		var music_url = 'https://www.douban.com/j/app/radio/people?version=100&app_name=radio_android&type=n&channel=';
+		var channel_url = 'https://www.douban.com/j/app/radio/channels';
+	</script>
+	
+	<script>
+	
+//	var data = {
+//		channel : [
+//		{
+//			'title':'测试',
+//			'artist':'dreamfly',
+//			'url':'http://yinyueshiting.baidu.com/data2/music/5b665918b1bb61df9addddc10ae13f1a/265576414/73917767169200128.mp3?xcode=c109fc40385204f1223d24c5de246011'
+//		}
+//			
+//		]
+//	};
+//	var tpl = document.getElementById('tpl').innerHTML;
+//	var music_content = juicer(tpl, data);
+//	$("#content").html(music_content);
+//	$("#myAudio").initAudio();
+	
+	mui.plusReady(function(){
+        var self = plus.webview.currentWebview();
+		var channelid = self.channelid;
+		
+		
+		$.ajax({
+			type:"get",
+			url:music_url+channelid,
+			dataType : 'json',
+			async:true,
+			success:function(result){
+				//console.log(JSON.stringify(result.ong));
+				var data = {
+					channel : result.song
+				};
+				var tpl = document.getElementById('tpl').innerHTML;
+				var music_content = juicer(tpl, data);
+				$("#content").html(music_content);
+				$("#myAudio").initAudio();
+			}
+		});
+		
+  	});
+		
+	</script>
+</body>
+</html>
