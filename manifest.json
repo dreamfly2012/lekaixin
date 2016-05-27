@@ -3,18 +3,18 @@
     "id": "H58A0A7D5",/*应用的标识，创建应用时自动生成，勿手动修改*/
     "name": "乐开心",/*应用名称，程序桌面图标名称*/
     "version": {
-        "name": "0.0.2",/*应用版本名称*/
+        "name": "0.0.4",/*应用版本名称*/
         "code": "165"
     },
-    "description": "HTML5 Plus能力演示",/*应用描述信息*/
+    "description": "开心追逐",/*应用描述信息*/
     "icons": {
         "144": "icon.png"
     },
     "launch_path": "index.html",/*应用的入口页面，默认为根目录下的index.html；支持网络地址，必须以http://或https://开头*/
     "developer": {
-        "name": "",/*开发者名称*/
-        "email": "",/*开发者邮箱地址*/
-        "url": "http://www.dcloud.io"/*开发者个人主页地址*/
+        "name": "dreamfly",/*开发者名称*/
+        "email": "jia.fu2013@gmail.com",/*开发者邮箱地址*/
+        "url": "www.80shihua.com"/*开发者个人主页地址*/
     },
     "orientation": [
         "portrait"
@@ -243,7 +243,7 @@
                 "oauth": {
                     
                 }
-            }
+            },"debug":true
         }
     },
 "dependencies":{

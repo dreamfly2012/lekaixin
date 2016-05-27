@@ -20,66 +20,168 @@
 		<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
 		<h1 class="mui-title">乐开心</h1>
 	</header>
-	<div class="mui-content">
-		<ul id="content" class="mui-table-view">
-			<script id="tpl" type="text/template">
-			{@each channel as it,index}
-			<style>
-			.music_info{
-				background: -webkit-linear-gradient(top,rgba(0,0,0,0.4),rgba(0,0,0,0.4)) no-repeat left top,url(${it.picture}) no-repeat left top;
-				background-size:cover;
-			}
-			</style>
-			<div id="myAudio" style="margin:0 auto;">
-				<audio>
-					<source title="${it.artist}- ${it.title}" src="${it.url}" />
-				</audio>
-			</div>
-			{@/each}
-			</script>
-		</ul>
-		
-		
-	</div>
 	
+	<div id="content">
+		<script id="tpl" type="text/template">
+		{@each channel as it,index}
+		<style>
+		.music_info {
+			background: url(${it.picture}) no-repeat;
+			background-size:cover;
+		}
+		</style>
+		<div id="myAudio" style="margin:0 auto;">
+			<audio>
+				<source title="${it.artist}- ${it.title}" src="${it.url}" />
+			</audio>
+		</div>
+		{@/each}
+		</script>
+
+	</div>
 	
 	
 	
 	<script>
 		var access_host = 'http://www.80shihua.com/app_backend/';
-		var music_url = 'https://www.douban.com/j/app/radio/people?version=100&app_name=radio_android&type=n&channel=';
 		var channel_url = 'https://www.douban.com/j/app/radio/channels';
 	</script>
 	
 	<script>
 	
 //	var data = {
-//		channel : [
-//		{
-//			'title':'测试',
-//			'artist':'dreamfly',
-//			'url':'http://yinyueshiting.baidu.com/data2/music/5b665918b1bb61df9addddc10ae13f1a/265576414/73917767169200128.mp3?xcode=c109fc40385204f1223d24c5de246011'
-//		}
-//			
-//		]
-//	};
-//	var tpl = document.getElementById('tpl').innerHTML;
-//	var music_content = juicer(tpl, data);
-//	$("#content").html(music_content);
-//	$("#myAudio").initAudio();
+//	 	channel : [
+//	 	{
+//	 		"album": "/subject/5398612/",
+//	 		"status": 0,
+//	 		"picture": "https://img3.doubanio.com/lpic/s4579574.jpg",
+//	 		"ssid": "6cfb",
+//	 		"artist": "A-Lin",
+//	 		"url": "http://yinyueshiting.baidu.com/data2/music/42655044/605630136800128.mp3?xcode=ec88499ff999f91acc3224dc97e4d7a9",
+//	 		"title": "给我一个理由忘记",
+//	 		"length": 286,
+//	 		"like": 0,
+//	 		"subtype": "",
+//	 		"public_time": "2010",
+//	 		"sid": "1671512",
+//	 		"singers": [
+//	 			{
+//	 				"related_site_id": 0,
+//	 				"is_site_artist": false,
+//	 				"id": "15753",
+//	 				"name": "A-Lin"
+//	 			}
+//	 		],
+//	 		"aid": "5398612",
+//	 		"file_ext": "mp4",
+//	 		"sha256": "66e9653975ba2edf9fe5ed3c34101800efb138fb1709eebb52e1a3f8d75c88d8",
+//	 		"kbps": "128",
+//	 		"albumtitle": "寂寞不痛",
+//	 		"alert_msg": ""
+//	 	}
+//	 	]
+//	 };
+//	 var tpl = document.getElementById('tpl').innerHTML;
+//	 var music_content = juicer(tpl, data);
+//	 $("#content").html(music_content);
+//	 $("#myAudio").initAudio();
+
+	
+	function isArray(object) { 
+		return object != null && typeof object == "object" && 
+		'splice' in object && 'join' in object; 
+	} 
+	
+	function parseLyric(text) {
+    	//将文本分隔成一行一行，存入数组
+    	var lines = text.split('\n'),
+        //用于匹配时间的正则表达式，匹配的结果类似[xx:xx.xx]
+        pattern = /\[\d{2}:\d{2}.\d{2}\]/g,
+        //保存最终结果的数组
+        result = [];
+	    //去掉不含时间的行
+	    while (!pattern.test(lines[0])) {
+	        lines = lines.slice(1);
+	    };
+    	//上面用'\n'生成生成数组时，结果中最后一个为空元素，这里将去掉
+    	lines[lines.length - 1].length === 0 && lines.pop();
+    	lines.forEach(function(v /*数组元素值*/ , i /*元素索引*/ , a /*数组本身*/ ) {
+	        //提取出时间[xx:xx.xx]
+	        var time = v.match(pattern),
+	        //提取歌词
+	        value = v.replace(pattern, '');
+	        //因为一行里面可能有多个时间，所以time有可能是[xx:xx.xx][xx:xx.xx][xx:xx.xx]的形式，需要进一步分隔
+	        if(isArray(time)){
+	        	time.forEach(function(v1, i1, a1) {
+		            //去掉时间里的中括号得到xx:xx.xx
+		            var t = v1.slice(1, -1).split(':');
+		            //将结果压入最终数组
+		            result.push([parseInt(t[0], 10) * 60 + parseFloat(t[1]), value]);
+		        });
+	        }
+	        
+	    });
+	    //最后将结果数组中的元素按时间大小排序，以便保存之后正常显示歌词
+	    result.sort(function(a, b) {
+	        return a[0] - b[0];
+	    });
+	    return result;
+	}
+	
+	function get_lrc(song){
+		//console.log(song);
+		$.ajax({
+			type:"get",
+			url:access_host+'getlrc.php?song='+song,//当你孤单你会想起谁
+			dataType : 'json',
+			async:true,
+			success:function(result){
+				var lrc = result.lrc;
+		        $.ajax({
+		        	type:"get",
+					url:access_host+'getlrc_content.php?url='+lrc,
+					dataType : 'html',
+					async:true,
+					success:function(result){
+						lyric = parseLyric(result);
+						//console.log(lyric);
+						var lyricContainer = $('.music_lrc')[0];
+						fragment = document.createDocumentFragment();
+					    lyric.forEach(function(v, i, a) {
+					        var line = document.createElement('li');
+					        line.id = 'line-' + i;
+					        line.textContent = v[1];
+					        fragment.appendChild(line);
+					    });
+					    lyricContainer.appendChild(fragment);
+					    //获取页面上的audio标签
+						$('audio').bind("timeupdate", function(e) {
+					        //遍历所有歌词，看哪句歌词的时间与当然时间吻合
+						    for (var i = 0, l = lyric.length; i < l; i++) {
+						    	if (this.currentTime> lyric[i][0]) {
+						            //显示到页面
+						            $('#line-'+i).css('color','yellow').siblings().css('color','white');
+						            $('.music_lrc').css('margin-top','-'+21*i+'px');
+						        };
+						    };
+					    });
+					}
+		        });
+			}
+		});
+	}
 	
 	mui.plusReady(function(){
         var self = plus.webview.currentWebview();
 		var channelid = self.channelid;
-		
-		
+		//var channelid = 1;
 		$.ajax({
 			type:"get",
-			url:music_url+channelid,
+			url:access_host+'getmusic.php?id='+channelid,
 			dataType : 'json',
 			async:true,
 			success:function(result){
-				//console.log(JSON.stringify(result.ong));
+				//console.log(JSON.stringify(result.song));
 				var data = {
 					channel : result.song
 				};
@@ -87,10 +189,12 @@
 				var music_content = juicer(tpl, data);
 				$("#content").html(music_content);
 				$("#myAudio").initAudio();
+				
+				get_lrc(result.song[0]['title']);
+	
 			}
 		});
-		
-  	});
+	});
 		
 	</script>
 </body>

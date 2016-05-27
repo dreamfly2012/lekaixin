@@ -4,7 +4,6 @@
 			/*添加播放器UI组件*/
 			this.append(
 				'<div class="music_info clearfix">'+
-					'<div class="cd_holder"><span class="stick"></span><div class="cd"></div></div>'+
 					'<div class="meta_data">'+
 						'<span class="title"></span>'+
 						'<div class="volume_control">'+
@@ -20,7 +19,7 @@
 						'</div>'+
 					'</div>'+
 				'</div>'+
-				'<ul class="music_list"></ul>'+
+				'<div class="music_lrc_wrap"><ul class="music_lrc"></ul></div>'+
 				'<div class="controls">'+
 					'<div class="time_line">'+
 						'<span class="passed_time">0:00</span>'+
@@ -87,50 +86,18 @@
 				volume > 1 && (volume = 1);
 				myAudio.changeVolumeTo(volume);
 			});
-			$(".volume_control .base_bar").mousedown(function(ev){
-				var posX = ev.clientX;
-				var targetLeft = $(this).offset().left;
-				var volume = (posX - targetLeft)/100;
-				volume > 1 && (volume = 1);
-				volume < 0 && (volume = 0);
-				myAudio.changeVolumeTo(volume);
+			$(".volume_control input[type=range]").change(function(ev){
+				volume = $(this).val();
+				myAudio.changeVolumeTo(volume/100);
 			});
-			$(".volume_control .slider").mousedown(starDrag = function(ev) {
-				ev.preventDefault();
-				var origLeft = $(this).position().left;      /*滑块初始位置*/
-				var origX = ev.clientX;						/*鼠标初始位置*/
-				var target = this;
-				$(document).mousemove(doDrag = function(ev){
-					ev.preventDefault();
-					var moveX = ev.clientX - origX;        /*计算鼠标移动的距离*/
-					var curLeft = origLeft + moveX;			/*用鼠标移动的距离表示滑块的移动距离*/
-					(curLeft < -7) && (curLeft = -7);
-					(curLeft > 93) && (curLeft = 93);
-					myAudio.changeVolumeTo((curLeft + 7)/100);
-				});
-				$(document).mouseup(stopDrag = function(){
-					$(document).unbind("mousemove",doDrag);
-					$(document).unbind("mouseup",stopDrag);
-				});
-			});
+			
 			/*音频进度条调控功能实现*/
-			$(".time_line .base_bar").mousedown(function(ev){
-				var posX = ev.clientX;
-				var targetLeft = $(this).offset().left;
-				var percentage = (posX - targetLeft)/140 * 100;
-				myAudio.currentTime = myAudio.duration * percentage / 100;
+			$(".time_line input[type=range]").change(function(ev){
+				volume = $(this).val();
+				myAudio.currentTime = myAudio.duration * volume / 100;
 			});
-			$(".music_info .cd").click(function(){
-				$(".music_list").slideToggle(300);
-			});
-			$(".music_list").click(function(ev){
-				var index = $(ev.target).index();
-				currentSrcIndex = index;
-				currentSrc = $("#myAudio source").eq(currentSrcIndex).prop("src");
-				myAudio.src = currentSrc;
-				myAudio.play();
-			});
-			/*audio元素事件绑定*/
+			
+			 /*audio元素事件绑定*/
 			$(myAudio).bind("loadedmetadata",function(){
 				var totalTime = formatTime(myAudio.duration);
 				var title = $("#myAudio source").eq(currentSrcIndex).attr("title");
@@ -141,15 +108,14 @@
 				var duration = this.duration;
 				var curTime = this.currentTime;
 				var percentage = curTime/duration * 100;
-				$progress_bar.css("width",percentage + "%");
-
+				$('.time_line input[type=range]').val(percentage);
+				
 				var passedTime = formatTime(curTime);
 				$passed_time.text(passedTime);						
 			});
 			$(myAudio).bind("play",function(){
 				$(".btn_play").text("h");
-				$(".music_list li").eq(currentSrcIndex).addClass("active")
-				.siblings().removeClass("active");
+				$(".music_list li").eq(currentSrcIndex).addClass("active").siblings().removeClass("active");
 				$(".music_info .cd").addClass("rotate");
 				$(".cd_holder .stick").addClass("play");
 			});

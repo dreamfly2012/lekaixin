@@ -23,11 +23,32 @@
 			
 		</div>
 	</body>
+	<script src="../js/baijia.js"></script>
 	<script>
+	
+		var id = 472127;
+		//console.log(id);
+		
+		
+		$.ajax({
+			type:"get",
+			url:"http://www.80shihua.com/app_backend/getbaijia_content.php?id="+id,
+			dataType : 'html',
+			async:true,
+			success:function(result){
+				//console.log(result);
+				$("#baijia").html(result);
+				console.log($('.lazy-lozd'));
+				$(document).on('ready',".lazy-lozd",function(){
+					$(this).attr('src',$(this).attr('data-url'));
+				});
+			}
+		});
+		
 		mui.plusReady(function(){
 	        var self = plus.webview.currentWebview();
 			var id = self.bjaid;
-			console.log(id);
+			//console.log(id);
 			
 			
 			$.ajax({
@@ -36,8 +57,9 @@
 				dataType : 'html',
 				async:true,
 				success:function(result){
-					console.log(result);
+					//console.log(result);
 					$("#baijia").html(result);
+					$("img.lazy-lozd").lazyload();
 				}
 			});
 			
