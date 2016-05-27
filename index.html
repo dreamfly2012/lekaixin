@@ -10,39 +10,9 @@
 		<link rel="stylesheet" href="css/mui.min.css">
 		<!--App自定义的css-->
 		<link rel="stylesheet" type="text/css" href="css/app.css"/>
-		<style>
-			.title{
-				margin: 20px 15px 10px;
-				color: #6d6d72;
-				font-size: 15px;
-			}
-			
-			.oa-contact-cell.mui-table .mui-table-cell {
-				padding: 11px 0;
-				vertical-align: middle;
-			}
-			
-			.oa-contact-cell {
-				position: relative;
-				margin: -11px 0;
-			}
-	
-			.oa-contact-avatar {
-				width: 75px;
-			}
-			.oa-contact-avatar img {
-				border-radius: 50%;
-			}
-			.oa-contact-content {
-				width: 100%;
-			}
-			.oa-contact-name {
-				margin-right: 20px;
-			}
-			.oa-contact-name, oa-contact-position {
-				float: left;
-			}
-		</style>
+		<script src="js/jquery.min.js"></script>
+		<script src="js/mui.min.js"></script>
+		<script src="js/juicer-min.js"></script>
 	</head>
 
 	<body>
@@ -69,10 +39,8 @@
 			</a>
 		</nav>
 		<div class="mui-content">
-			
-			
-			<div id="tabbar" data-page="2" class="mui-control-content mui-scroll-wrapper mui-active">
-				<div class="title">笑话</div>
+			<div id="tabbar" data-page="2" class="mui-control-content mui-active">
+				<div class="title">笑话 </div>
 				<ul class="mui-table-view">
 					<script id="tpl" type="text/template">
 					    {@each joke as it,index}
@@ -86,23 +54,20 @@
 					</script>
 				</ul>
 			</div>
+
 			<div id="tabbar-with-radio" class="mui-control-content">
 				<div class="title">豆瓣电台</div>
-				
 				<ul class="mui-table-view mui-table-view-chevron">
 					<script id="music_tpl" type="text/template">
 						{@each channel as it,index}
 							<li class="mui-table-view-cell"><a href="javascript:;" class="mui-navigate-right jump_music_detail" data-channelid="${it.channel_id}">${it.name}</a></li>
 						{@/each}
 					</script>
-					
 				</ul>
-				
 			</div>
+
 			<div id="tabbar-with-baijia" class="mui-control-content">
-				<div class="title">
-					百家
-				</div>
+				<div class="title">百家</div>
 				<ul class="mui-table-view">
 					<script id="baijia_tpl" type="text/template">
 					{@each baijia as it,index}
@@ -119,20 +84,19 @@
 					</script>
 				</ul>
 			</div>
+
 			<div id="tabbar-with-about" class="mui-control-content">
-				<iframe src="http://www.80shihua.com/app_backend/rabit.php" style="width: 100%;min-height: 600px;overflow: hidden;"></iframe>-->
+				<iframe src="http://www.80shihua.com/app_backend/rabit.php" style="width: 100%;min-height: 600px;overflow: hidden;"></iframe>
 			</div>
 		</div>
 	</body>
-	<script src="js/jquery.min.js"></script>
-	<script src="js/mui.min.js"></script>
-	<script src="js/juicer-min.js"></script>
+	
 	
 	<script>
 		var access_host = 'http://www.80shihua.com/app_backend/';
-		var baijia_url = 'http://baijia.baidu.com/ajax/labellatestarticle?page=1&pagesize=20&prevarticalid=463752&flagtogether=1&labelid=3';
-		var music_url = 'https://www.douban.com/j/app/radio/people?version=100&app_name=radio_android&type=n&channel=';
-		var channel_url = 'https://www.douban.com/j/app/radio/channels';
+		//var baijia_url = 'http://baijia.baidu.com/ajax/labellatestarticle?page=1&pagesize=20&prevarticalid=463752&flagtogether=1&labelid=3';
+		//var music_url = 'https://www.douban.com/j/app/radio/people?version=100&app_name=radio_android&type=n&channel=';
+		//var channel_url = 'https://www.douban.com/j/app/radio/channels';
 	</script>
 
 		
@@ -142,24 +106,8 @@
 		 * 下拉刷新具体业务实现
 		 */
 		function pulldownRefresh() {
-			var page = parseInt($('#tabbar').attr('data-page'));
-    
-      		setTimeout(function() {
-				$.ajax({
-					type:"get",
-					url:access_host+"getjoke.php?p=" + page,
-					dataType : 'json',
-					async:true,
-					success:function(result){
-						var data = {
-							joke : result
-						};
-						var tpl = document.getElementById('tpl').innerHTML;
-						var jokecontent = juicer(tpl, data);
-						$("#tabbar").find('.mui-table-view').append(jokecontent);
-						$('#tabbar').attr('data-page',page+1);
-					}
-				});
+			setTimeout(function() {
+				location.reload();
 			}, 1500);
 		}
 		var count = 0;
@@ -167,7 +115,6 @@
 		 * 上拉加载具体业务实现
 		 */
 		function pullupRefresh() {
-			
 			setTimeout(function() {
       			var page = parseInt($('#tabbar').attr('data-page'));
       			mui('#tabbar').pullRefresh().endPullupToRefresh(false);
@@ -182,7 +129,7 @@
 						};
 						var tpl = document.getElementById('tpl').innerHTML;
 						var jokecontent = juicer(tpl, data);
-						$(jokecontent).insertBefore($('#tabbar').find('.mui-pull-bottom-pocket'));
+						$('#tabbar').find('.mui-table-view').append(jokecontent);
 						$('#tabbar').attr('data-page',page+1);
 					}
 				});
@@ -193,18 +140,36 @@
 			swipeBack:true ,//启用右滑关闭功能,
 			pullRefresh: {
 				container: '#tabbar',
-//				down: {
-//					contentrefresh: '正在加载...',
-//					callback: pulldownRefresh
-//				},
+				down: {
+					contentrefresh: '正在加载...',
+					callback: pulldownRefresh
+				},
 				up: {
 					contentrefresh: '正在加载...',
 					callback: pullupRefresh
 				}
-			}
-			
-//			
+			}		
 		});
+		
+		mui.plusReady(function() {
+            //首页返回键处理
+            //处理逻辑：1秒内，连续两次按返回键，则退出应用；
+            var first = null;
+            plus.key.addEventListener('backbutton', function() {
+                //首次按键，提示‘再按一次退出应用’
+                if (!first) {
+                    first = new Date().getTime();
+                    mui.toast('再按一次退出应用');
+                    setTimeout(function() {
+                        first = null;
+                    }, 1000);
+                } else {
+                    if (new Date().getTime() - first < 1000) {
+                        plus.runtime.quit();
+                    }
+                }
+            }, false);
+        });
 		
 		$.ajax({
 			type:"get",
@@ -217,7 +182,7 @@
 				};
 				var tpl = document.getElementById('baijia_tpl').innerHTML;
 				var baijiacontent = juicer(tpl, data);
-				$("#tabbar-with-baijia").find('.mui-table-view').prepend(baijiacontent);
+				$("#baijia_tpl").before(baijiacontent);
 			}
 		});
 		
@@ -232,7 +197,7 @@
 				};
 				var tpl = document.getElementById('tpl').innerHTML;
 				var jokecontent = juicer(tpl, data);
-				$("#tabbar").find('.mui-table-view').prepend(jokecontent);
+				$("#tpl").before(jokecontent);
 			}
 		});
 		
