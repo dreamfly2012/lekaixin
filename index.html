@@ -50,7 +50,7 @@
 							<h4>
 								${it.title}
 							</h4>
-							<span>${it.text}</span>
+							<span><img src="${it.img}" /></span>
 						</li>
 						{@/each}
 					</script>
@@ -201,7 +201,7 @@
 					joke : result
 				};
 				var tpl = document.getElementById('tpl').innerHTML;
-				var jokecontent = juicer(tpl, data);
+				var jokecontent = juicer(tpl, data.joke);
 				$("#tpl").before(jokecontent);
 			}
 		});
