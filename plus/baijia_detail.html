@@ -23,46 +23,40 @@
 			
 		</div>
 	</body>
-	<script src="../js/baijia.js"></script>
 	<script>
-	
-		var id = 472127;
-		//console.log(id);
-		
-		
-		$.ajax({
-			type:"get",
-			url:"http://www.80shihua.com/app_backend/getbaijia_content.php?id="+id,
-			dataType : 'html',
-			async:true,
-			success:function(result){
-				//console.log(result);
-				$("#baijia").html(result);
-				console.log($('.lazy-lozd'));
-				$(document).on('ready',".lazy-lozd",function(){
-					$(this).attr('src',$(this).attr('data-url'));
-				});
-			}
-		});
-		
-		mui.plusReady(function(){
-	        var self = plus.webview.currentWebview();
-			var id = self.bjaid;
-			//console.log(id);
-			
-			
-			$.ajax({
-				type:"get",
-				url:"http://www.80shihua.com/app_backend/getbaijia_content.php?id="+id,
-				dataType : 'html',
-				async:true,
-				success:function(result){
-					//console.log(result);
-					$("#baijia").html(result);
-					$("img.lazy-lozd").lazyload();
-				}
+		var access_host = (window.LK_API_HOST || (location.protocol + '//' + location.host)) + '/app_backend/';
+		// 旧后端 www.80shihua.com 已失效，改为同源本地模拟接口（server.js）
+
+		function getQuery(name){
+			var reg = new RegExp('(^|&)'+name+'=([^&]*)(&|$)');
+			var r = location.search.substr(1).match(reg);
+			return r ? decodeURIComponent(r[2]) : null;
+		}
+
+		function loadDetail(id){
+			// 详情正文 + 列表（用于按 id 取文章标题显示在顶部导航）
+			$.when(
+				$.ajax({ type:"get", url: access_host + "getbaijia_content.php?id=" + id, dataType:'html' }),
+				$.ajax({ type:"get", url: access_host + "getbaijia.php", dataType:'json' })
+			).done(function(content, list){
+				$("#baijia").html(content[0]);
+				var idNum = parseInt(id, 10);
+				var art = (list[0] || []).filter(function(a){ return parseInt(a.ID, 10) === idNum; })[0];
+				var t = (art && art.m_title) ? art.m_title : '百家';
+				document.title = t;
+				$('.mui-bar-nav .mui-title').text(t);
 			});
-			
-	  	});
+		}
+
+		if (mui.os && mui.os.plus) {
+			// 真机 5+ 环境
+			mui.plusReady(function(){
+				var self = plus.webview.currentWebview();
+				loadDetail(self.bjaid || getQuery('id') || 472127);
+			});
+		} else {
+			// 浏览器环境：参数通过 URL query 传递
+			$(function(){ loadDetail(getQuery('id') || 472127); });
+		}
 	</script>
 </html>

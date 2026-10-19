@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="600" height="600" viewBox="0 0 600 600">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#e8590c"/>
+      <stop offset="1" stop-color="#b4231f"/>
+    </linearGradient>
+  </defs>
+  <rect width="600" height="600" fill="url(#g)"/>
+  <circle cx="300" cy="250" r="150" fill="#111" opacity="0.55"/>
+  <circle cx="300" cy="250" r="150" fill="none" stroke="#ffffff" stroke-opacity="0.25" stroke-width="2"/>
+  <circle cx="300" cy="250" r="48" fill="#fff" opacity="0.9"/>
+  <circle cx="300" cy="250" r="14" fill="#b4231f"/>
+  <ellipse cx="430" cy="180" rx="33.6" ry="24.0" transform="rotate(-20 430 180)" fill="#ffffff"/><rect x="458.8" y="48.0" width="10.8" height="120.0" fill="#ffffff"/>
+  <text x="300" y="470" text-anchor="middle" font-family="PingFang SC, Microsoft YaHei, sans-serif" font-size="40" font-weight="bold" fill="#ffffff">枫</text>
+  <text x="300" y="520" text-anchor="middle" font-family="PingFang SC, Microsoft YaHei, sans-serif" font-size="24" fill="#ffffff" fill-opacity="0.85">周杰伦</text>
+</svg>

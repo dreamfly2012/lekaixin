@@ -48,6 +48,7 @@
 
 			/*为播放列表添加歌曲信息*/
 			initMusicList();
+			applySongUI(currentSrcIndex);
 			/*调控音量方法*/
 			HTMLAudioElement.prototype.changeVolumeTo = function(volume){
 				this.volume = volume;
@@ -67,12 +68,14 @@
 				++currentSrcIndex > musicsAmount - 1 && (currentSrcIndex = 0);
 				currentSrc = $("#myAudio source").eq(currentSrcIndex).prop("src");
 				myAudio.src = currentSrc;
+				applySongUI(currentSrcIndex);
 				myAudio.play();
 			});
 			$(".btn_previous").click(function(){
 				--currentSrcIndex < 0 && (currentSrcIndex = 0);
 				currentSrc = $("#myAudio source").eq(currentSrcIndex).prop("src");
 				myAudio.src = currentSrc;
+				applySongUI(currentSrcIndex);
 				myAudio.play();
 			});
 			/*音量调控功能实现*/
@@ -99,13 +102,20 @@
 			
 			 /*audio元素事件绑定*/
 			$(myAudio).bind("loadedmetadata",function(){
-				var totalTime = formatTime(myAudio.duration);
+				var dur = myAudio.duration;
+				if (!isFinite(dur) || dur <= 0) {
+					var len = parseFloat($("#myAudio source").eq(currentSrcIndex).attr("data-length"));
+					dur = isFinite(len) ? len : 0;
+				}
+				var totalTime = formatTime(dur);
 				var title = $("#myAudio source").eq(currentSrcIndex).attr("title");
 				$(".time_line .total_time").text(totalTime);
 				$(".meta_data .title").text(title);
+				applySongUI(currentSrcIndex);
 			});
 			$(myAudio).bind("timeupdate",function(){
 				var duration = this.duration;
+				if (!isFinite(duration) || duration <= 0) return;
 				var curTime = this.currentTime;
 				var percentage = curTime/duration * 100;
 				$('.time_line input[type=range]').val(percentage);
@@ -141,8 +151,16 @@
 				
 			});
 			$(myAudio).trigger("loadedmetadata");
+			/*歌曲封面随当前曲目切换*/
+			function applySongUI(idx) {
+				var $src = $("#myAudio source").eq(idx);
+				if (!$src.length) return;
+				var cover = $src.attr("data-cover");
+				if (cover) $(".music_info").css("background-image", "url(" + cover + ")");
+			}
 			/*歌曲播放时间的格式化，将秒数格式化为“分:秒”的形式*/
 			function formatTime(time) {
+				if (!isFinite(time) || time < 0) time = 0;
 				var minutes = parseInt(time/60);
 				var seconds = parseInt(time%60);
 				seconds<10 && (seconds = "0" + seconds);
@@ -202,8 +220,8 @@
 			function initMusicList() {
 				var musics = "";
 				var $sourceList = $("#myAudio source");
-				for (var i = $sourceList.length - 1; i>=0; i--) {
-					musics = "<li>" + $sourceList[i].title + "</li>" + musics;
+				for (var i = 0; i < $sourceList.length; i++) {
+					musics += "<li>" + $sourceList[i].title + "</li>";
 				}
 				$(".music_list").html(musics);
 			}

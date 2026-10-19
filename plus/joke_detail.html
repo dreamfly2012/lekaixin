@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>笑话</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+		<script src="../js/jquery.min.js"></script>
+		<script src="../js/mui.min.js"></script>
+		<link href="../css/mui.min.css" rel="stylesheet"/>
+		<style>
+			.joke-detail { padding: 15px; }
+			.joke-detail h2 { font-size: 20px; color: #222; margin: 6px 0 12px; }
+			.joke-detail img { width: 100%; display: block; border-radius: 4px; }
+			.joke-detail p { line-height: 1.9; color: #444; font-size: 15px; margin-top: 14px; }
+		</style>
+	</head>
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">笑话</h1>
+		</header>
+		<div class="mui-content">
+			<div class="joke-detail">
+				<img id="joke-img" src="" alt=""/>
+				<p id="joke-text"></p>
+			</div>
+		</div>
+	</body>
+	<script>
+		function getQuery(name){
+			var reg = new RegExp('(^|&)'+name+'=([^&]*)(&|$)');
+			var r = location.search.substr(1).match(reg);
+			return r ? decodeURIComponent(r[2]) : null;
+		}
+
+		$(function(){
+			var title = getQuery('title') || '笑话';
+			var img = getQuery('img') || '';
+			var text = getQuery('text') || '';
+
+			// 标题显示在顶部导航，正文区不再重复展示大标题
+			document.title = title;
+			$('.mui-bar-nav .mui-title').text(title);
+			$('#joke-img').prop('src', img);
+			$('#joke-text').text(text);
+		});
+	</script>
+</html>

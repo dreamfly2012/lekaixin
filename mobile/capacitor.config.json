@@ -1,0 +1,8 @@
+{
+  "appId": "com.lekaixin.app",
+  "appName": "乐开心",
+  "webDir": "www",
+  "server": {
+    "androidScheme": "https"
+  }
+}

@@ -42,3 +42,19 @@ Network Trash Folder
 Temporary Items
 .apdisk
 /unpackage/release
+
+# =========================
+# 项目约定忽略（工作数据 / 个人配置 / 上传 / 临时）
+# =========================
+.workbuddy/
+.env
+public/uploads/
+*.bak*
+*.tmp
+# tools/pack_server.js 的部署包产物
+/dist/
+# 运行时生成的数据（saveInfo 接口写入，勿入库；部署时自动创建）
+/backend/data/users.json
+# 未引用的旧素材 / 构建缓存（保留本地磁盘，不进仓库）
+/audio/
+/unpackage/

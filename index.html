@@ -10,15 +10,24 @@
 		<link rel="stylesheet" href="css/mui.min.css">
 		<!--App自定义的css-->
 		<link rel="stylesheet" type="text/css" href="css/app.css"/>
+		<link href="css/music.css" rel="stylesheet"/>
 		<script src="js/jquery.min.js"></script>
 		<script src="js/mui.min.js"></script>
 		<script src="js/juicer-min.js"></script>
+		<script src="js/AudioPlayer.js"></script>
+		<style>
+			#radio-player-view { position: relative; padding-bottom: 10px; }
+			#radio-player-view #myAudio { position: relative; height: 60vh; min-height: 420px; }
+			#music_list_box { max-height: 220px; overflow-y: auto; margin: 0 0 8px; }
+			#music_list_box li { list-style:none; padding:8px 16px; color:#fff; background:rgba(20,20,20,0.6); border-bottom:1px solid #333; cursor:pointer; }
+			#radio-back-list { color:#fff; border:1px solid #555; background:rgba(0,0,0,0.4); }
+		</style>
 	</head>
 
 	<body>
 		<header class="mui-bar mui-bar-nav">
 			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
-			<h1 class="mui-title">乐开心</h1>
+			<h1 class="mui-title">笑话</h1>
 		</header>
 		<nav class="mui-bar mui-bar-tab">
 			<a class="mui-tab-item mui-active" href="#tabbar">
@@ -31,7 +40,7 @@
 			</a>
 			<a class="mui-tab-item" href="#tabbar-with-baijia">
 				<span class="mui-icon mui-icon-contact"></span>
-				<span class="mui-tab-label">百家</span>
+				<span class="mui-tab-label">新闻</span>
 			</a>
 			<a class="mui-tab-item" href="#tabbar-with-about">
 				<span class="mui-icon mui-icon-gear"></span>
@@ -40,13 +49,10 @@
 		</nav>
 		<div class="mui-content">
 			<div id="tabbar" data-page="2" class="mui-control-content mui-active">
-
-				<div class="title">笑话 </div>
-
 				<ul class="mui-table-view">
 					<script id="tpl" type="text/template">
 					    {@each joke as it,index}
-					    <li class="mui-table-view-cell">
+					    <li class="mui-table-view-cell jump_joke_detail" data-title="${it.title}" data-img="${it.img}" data-text="${it.text}">
 							<h4>
 								${it.title}
 							</h4>
@@ -58,30 +64,37 @@
 			</div>
 
 			<div id="tabbar-with-radio" class="mui-control-content">
-
-				<div class="title">豆瓣电台</div>
-
-				<ul class="mui-table-view mui-table-view-chevron">
-					<script id="music_tpl" type="text/template">
-						{@each channel as it,index}
-							<li class="mui-table-view-cell"><a href="javascript:;" class="mui-navigate-right jump_music_detail" data-channelid="${it.channel_id}">${it.name}</a></li>
-						{@/each}
-					</script>
-				</ul>
+				<!-- 频道列表视图 -->
+				<div id="radio-list-view">
+					<ul class="mui-table-view mui-table-view-chevron">
+						<script id="music_tpl" type="text/template">
+							{@each channel as it,index}
+								<li class="mui-table-view-cell"><a href="javascript:;" class="mui-navigate-right jump_music_detail" data-channelid="${it.channel_id}">${it.name}</a></li>
+							{@/each}
+						</script>
+					</ul>
+				</div>
+				<!-- 播放器视图（默认隐藏，点频道后在电台 tab 内切换显示） -->
+				<div id="radio-player-view" style="display:none;">
+					<div id="myAudio" style="margin:0 auto;"><audio preload="metadata"></audio></div>
+					<div class="music_list" id="music_list_box"></div>
+					<button id="radio-back-list" class="mui-btn mui-btn-block">返回频道列表</button>
+				</div>
 			</div>
 
 			<div id="tabbar-with-baijia" class="mui-control-content">
-
-				<div class="title">百家</div>
 				<ul class="mui-table-view">
 					<script id="baijia_tpl" type="text/template">
 					{@each baijia as it,index}
 					<li class="mui-table-view-cell mui-media">
 						<a href="javascript:;" class="jump_baijia_detail" data-bjaid="${it.ID}">
-							<img class="mui-media-object mui-pull-left" src="http://www.80shihua.com/app_backend/getimage.php?url=${it.m_image_url}">
+							{@if it.m_image_url}
+							<img class="mui-media-object mui-pull-left" src="${it.m_image_url}" onerror="this.style.visibility='hidden'">
+							{@/if}
 							<div class="mui-media-body">
 								${it.m_title}
 								<p class='mui-ellipsis'>${it.m_summary}</p>
+								{@if it.m_source}<p class='mui-ellipsis' style="color:#999;font-size:12px;">${it.m_source}</p>{@/if}
 							</div>
 						</a>
 					</li>
@@ -91,17 +104,20 @@
 			</div>
 
 			<div id="tabbar-with-about" class="mui-control-content">
-				<iframe src="http://www.80shihua.com/app_backend/rabit.php" style="width: 100%;min-height: 600px;overflow: hidden;"></iframe>
+				<iframe id="about-frame" src="" style="width: 100%;min-height: 600px;overflow: hidden;"></iframe>
 			</div>
 		</div>
 	</body>
 	
 	
 	<script>
-		var access_host = 'http://www.80shihua.com/app_backend/';
+		var access_host = (window.LK_API_HOST || (location.protocol + '//' + location.host)) + '/app_backend/';
+		// 旧后端 www.80shihua.com 已失效，改为同源本地模拟接口（server.js）
 		//var baijia_url = 'http://baijia.baidu.com/ajax/labellatestarticle?page=1&pagesize=20&prevarticalid=463752&flagtogether=1&labelid=3';
 		//var music_url = 'https://www.douban.com/j/app/radio/people?version=100&app_name=radio_android&type=n&channel=';
 		//var channel_url = 'https://www.douban.com/j/app/radio/channels';
+		// 关于页指向本地模拟接口
+		document.getElementById('about-frame').src = access_host + 'rabit.php';
 	</script>
 
 		
@@ -178,12 +194,17 @@
 		
 		$.ajax({
 			type:"get",
-			url:access_host+"getbaijia.php",
+			url:access_host+"getnews.php",
 			dataType : 'json',
 			async:true,
 			success:function(result){
+				// 用映射保存完整文章数据，点击详情时直接取用（避免长文本破坏 HTML 属性）
+				window.NEWS_MAP = {};
+				(result || []).forEach(function(a){ window.NEWS_MAP[a.ID] = a; });
+				// 注意：juicer 取不到全局变量，access_host 必须放进 data
 				var data = {
-					baijia : result
+					baijia : result,
+					access_host : access_host
 				};
 				var tpl = document.getElementById('baijia_tpl').innerHTML;
 				var baijiacontent = juicer(tpl, data);
@@ -201,7 +222,7 @@
 					joke : result
 				};
 				var tpl = document.getElementById('tpl').innerHTML;
-				var jokecontent = juicer(tpl, data.joke);
+				var jokecontent = juicer(tpl, data);
 				$("#tpl").before(jokecontent);
 			}
 		});
@@ -219,34 +240,24 @@
 //		});
 //		
 		
-		var data = {
-		    channel: [
-	            {
-	                "name": "私人兆赫",
-	                "seq_id": 0,
-	                "abbr_en": "My",
-	                "channel_id": 0,
-	                "name_en": "Personal Radio"
-	            },
-	            {
-	                "name": "华语",
-	                "seq_id": 1,
-	                "abbr_en": "CH",
-	                "channel_id": 1,
-	                "name_en": "Chinese"
-	            },
-	            {
-	                "name": "欧美",
-	                "seq_id": 2,
-	                "abbr_en": "EN",
-	                "channel_id": 2,
-	                "name_en": "Euro-American"
-	            }
-	        ]
-		};
-		var tpl = document.getElementById('music_tpl').innerHTML;
-		var jokecontent = juicer(tpl, data);
-		$("#tabbar-with-radio").find('.mui-table-view').html(jokecontent);
+		// 电台频道：从后端按当前数据源（Audius / 网易云）拉取
+		$.ajax({
+			type:"get",
+			url:access_host+"getchannels.php",
+			dataType : 'json',
+			async:true,
+			success:function(result){
+				var data = { channel: result };
+				var tpl = document.getElementById('music_tpl').innerHTML;
+				$("#tabbar-with-radio").find('.mui-table-view').html(juicer(tpl, data));
+			},
+			error:function(){
+				// 极端情况下后端不可达，给一个兜底频道
+				var data = { channel: [{ channel_id: 'trending', name: '推荐' }] };
+				var tpl = document.getElementById('music_tpl').innerHTML;
+				$("#tabbar-with-radio").find('.mui-table-view').html(juicer(tpl, data));
+			}
+		});
 		
 		
 		if (mui.os.plus) {
@@ -264,33 +275,180 @@
 	
 		
 	
+		function gotoPage(url, params){
+			var qs = [];
+			for (var k in params){ if (params.hasOwnProperty(k)) qs.push(k + '=' + encodeURIComponent(params[k])); }
+			var sep = url.indexOf('?') >= 0 ? '&' : '?';
+			var target = url + (qs.length ? sep + qs.join('&') : '');
+			if (mui.os && mui.os.plus) {
+				// 真机 5+ 环境：用原生 webview 打开
+				mui.openWindow({ url: target, id: target });
+			} else {
+				// 浏览器环境：直接跳转（参数通过 URL query 传递）
+				location.href = target;
+			}
+		}
+
 		$(document).ready(function(){
 			$(document).on('click','.jump_music_detail',function(){
 				var channelid = $(this).attr('data-channelid');
-				
-				mui.openWindow({
-					url:'plus/music.html',
-					id:1,
-					extras:{
-						channelid:channelid
-					}
-				})
-				
+				if (mui.os && mui.os.plus) {
+					// 真机 5+ 环境：仍用原生 webview 打开独立播放页
+					mui.openWindow({ url: 'plus/music.html?channelid=' + channelid, id: 'music' + channelid });
+				} else {
+					// 浏览器：在首页电台 tab 内切换为播放器视图，底部导航保持公用、切换不丢播放
+					showRadioPlayer(channelid);
+				}
 			});
-			
-			//
+
 			$(document).on('click','.jump_baijia_detail',function(){
-				var bjaid = $(this).attr('data-bjaid');
-				
-				mui.openWindow({
-					url:'plus/baijia_detail.html',
-					id:2,
-					extras:{
-						bjaid:bjaid
-					}
-				})
-				
+				var a = (window.NEWS_MAP && window.NEWS_MAP[$(this).attr('data-bjaid')]) || {};
+				gotoPage('plus/news_detail.html', {
+					url: a.m_url || '',
+					title: a.m_title || '',
+					img: a.m_image_url || '',
+					summary: a.m_summary || '',
+					source: a.m_source || '',
+					time: a.m_published || ''
+				});
 			});
+
+			// 笑话详情：标题/图片/文字通过 URL query 传给详情页
+			$(document).on('click','.jump_joke_detail',function(){
+				gotoPage('plus/joke_detail.html', {
+					title: $(this).attr('data-title'),
+					img: $(this).attr('data-img'),
+					text: $(this).attr('data-text')
+				});
+			});
+		});
+
+		// 顶部导航标题随当前 tab 变化（笑话/电台/新闻/关于）
+		function setNavTitleByTab(item){
+			var label = item.querySelector('.mui-tab-label');
+			var title = document.querySelector('.mui-bar-nav .mui-title');
+			if (label && title) title.textContent = label.textContent;
+		}
+		mui('.mui-bar-tab').on('tap', '.mui-tab-item', function(){
+			setNavTitleByTab(this);
+		});
+
+		// 支持从子页面（如音乐页底部 tab）通过 location.hash 直接定位到首页对应 tab
+		function syncTabFromHash(){
+			var h = location.hash;
+			if(!h) return;
+			var item = document.querySelector('.mui-bar-tab a[href="'+h+'"]');
+			if(item){ mui.trigger(item, 'tap'); }
+		}
+		window.addEventListener('hashchange', syncTabFromHash);
+		syncTabFromHash();
+
+		// ============ 电台播放器：首页内子视图（底部导航公用） ============
+		var lyric = [];
+		function parseLyric(text) {
+			var lines = text.split('\n'),
+				pattern = /\[\d{2}:\d{2}.\d{2}\]/g,
+				result = [];
+			while (lines.length && !pattern.test(lines[0])) { lines = lines.slice(1); }
+			lines[lines.length - 1].length === 0 && lines.pop();
+			lines.forEach(function(v, i, a) {
+				var time = v.match(pattern),
+					value = v.replace(pattern, '');
+				if (time) {
+					time.forEach(function(v1) {
+						var t = v1.slice(1, -1).split(':');
+						result.push([parseInt(t[0], 10) * 60 + parseFloat(t[1]), value]);
+					});
+				}
+			});
+			result.sort(function(a, b) { return a[0] - b[0]; });
+			return result;
+		}
+		function get_lrc(song){
+			$.ajax({
+				type:"get",
+				url:access_host+'getlrc.php?song='+song,
+				dataType:'json',
+				async:true,
+				success:function(result){
+					var lrc = result.lrc;
+					$.ajax({
+						type:"get",
+						url:access_host+'getlrc_content.php?url='+lrc,
+						dataType:'html',
+						async:true,
+						success:function(result){
+							lyric = parseLyric(result);
+							var lyricContainer = $('.music_lrc')[0];
+							if (!lyricContainer) return;
+							fragment = document.createDocumentFragment();
+							lyric.forEach(function(v, i) {
+								var line = document.createElement('li');
+								line.id = 'line-' + i;
+								line.textContent = v[1];
+								fragment.appendChild(line);
+							});
+							lyricContainer.appendChild(fragment);
+							$('audio').unbind("timeupdate").bind("timeupdate", function(e) {
+								for (var i = 0, l = lyric.length; i < l; i++) {
+									if (this.currentTime > lyric[i][0]) {
+										$('#line-'+i).css('color','yellow').siblings().css('color','white');
+										$('.music_lrc').css('margin-top','-'+21*i+'px');
+									};
+								};
+							});
+						}
+					});
+				}
+			});
+		}
+		function loadMusic(channelid){
+			$.ajax({
+				type:"get",
+				url:access_host+'getmusic.php?id='+channelid,
+				dataType:'json',
+				async:true,
+				success:function(result){
+					var data = { channel: result.song };
+					var tpl = '<audio preload="metadata">{@each channel as it,index}<source title="${it.artist} - ${it.title}" src="${it.url}" data-length="${it.length}" data-cover="${it.picture}" />{@/each}</audio>';
+					var $a = $('#myAudio');
+					$a.empty().append(juicer(tpl, data));
+					$a.initAudio();
+					if (result.song && result.song.length) {
+						get_lrc(result.song[0]['title']);
+					}
+				}
+			});
+		}
+		function currentSongTitle(){
+			var idx = $('.music_list li.active').index();
+			if (idx < 0) idx = 0;
+			return $('#myAudio source').eq(idx).attr('title') || '';
+		}
+		function reloadLyricForCurrent(){
+			var t = currentSongTitle();
+			if (t) { $('.music_lrc').empty(); get_lrc(t); }
+		}
+		function showRadioPlayer(channelid){
+			$('#radio-list-view').hide();
+			$('#radio-player-view').show();
+			loadMusic(channelid);
+		}
+		function hideRadioPlayer(){
+			$('#radio-player-view').hide();
+			$('#radio-list-view').show();
+		}
+		$(document).on('click','#radio-back-list', hideRadioPlayer);
+		$(document).on('click', '.btn_next, .btn_previous', function(){ setTimeout(reloadLyricForCurrent, 60); });
+		$(document).on('click', '.music_list li', function(){
+			var idx = $(this).index();
+			var $srcs = $('#myAudio source');
+			if (idx < 0 || idx >= $srcs.length) return;
+			var audio = $('#myAudio audio')[0];
+			if (!audio) return;
+			audio.src = $srcs.eq(idx).prop('src');
+			audio.play();
+			reloadLyricForCurrent();
 		});
 		
 		

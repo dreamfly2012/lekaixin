@@ -18,15 +18,15 @@
 <body>
 	<header class="mui-bar mui-bar-nav">
 		<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
-		<h1 class="mui-title">乐开心</h1>
+		<h1 class="mui-title">电台</h1>
 	</header>
 
 	<nav class="mui-bar mui-bar-tab">
-		<a class="mui-tab-item mui-active" href="../index.html#tabbar">
+		<a class="mui-tab-item" href="../index.html#tabbar">
 			<span class="mui-icon mui-icon-home"></span>
 			<span class="mui-tab-label">笑话</span>
 		</a>
-		<a class="mui-tab-item" href="../index.html#tabbar-with-radio">
+		<a class="mui-tab-item mui-active" href="../index.html#tabbar-with-radio">
 			<span class="mui-icon mui-icon-email"></span>
 			<span class="mui-tab-label">电台</span>
 		</a>
@@ -41,93 +41,30 @@
 	</nav>
 	<div id="content">
 		<script id="tpl" type="text/template">
-		{@each channel as it,index}
-		<style>
-		.music_info {
-			background: url(${it.picture}) no-repeat;
-			background-size:cover;
-		}
-		</style>
 		<div id="myAudio" style="margin:0 auto;">
-			<audio>
-				<source title="${it.artist}- ${it.title}" src="${it.url}" />
+			<audio preload="metadata">
+				{@each channel as it,index}
+				<source title="${it.artist} - ${it.title}" src="${it.url}" data-length="${it.length}" data-cover="${it.picture}" />
+				{@/each}
 			</audio>
 		</div>
-		{@/each}
 		</script>
 
 	</div>
-	
-	<div id="content">
-		<script id="tpl" type="text/template">
-		{@each channel as it,index}
-		<style>
-		.music_info {
-			background: url(${it.picture}) no-repeat;
-			background-size:cover;
-		}
-		</style>
-		<div id="myAudio" style="margin:0 auto;">
-			<audio>
-				<source title="${it.artist}- ${it.title}" src="${it.url}" />
-			</audio>
-		</div>
-		{@/each}
-		</script>
 
-	</div>
-	
-	
 	<script>
-		var access_host = 'http://www.80shihua.com/app_backend/';
+		var access_host = (window.LK_API_HOST || (location.protocol + '//' + location.host)) + '/app_backend/';
+		// 旧后端 www.80shihua.com 已失效，改为同源本地模拟接口（server.js）
 		var channel_url = 'https://www.douban.com/j/app/radio/channels';
 	</script>
-	
-	<script>
-	
-//	var data = {
-//	 	channel : [
-//	 	{
-//	 		"album": "/subject/5398612/",
-//	 		"status": 0,
-//	 		"picture": "https://img3.doubanio.com/lpic/s4579574.jpg",
-//	 		"ssid": "6cfb",
-//	 		"artist": "A-Lin",
-//	 		"url": "http://yinyueshiting.baidu.com/data2/music/42655044/605630136800128.mp3?xcode=ec88499ff999f91acc3224dc97e4d7a9",
-//	 		"title": "给我一个理由忘记",
-//	 		"length": 286,
-//	 		"like": 0,
-//	 		"subtype": "",
-//	 		"public_time": "2010",
-//	 		"sid": "1671512",
-//	 		"singers": [
-//	 			{
-//	 				"related_site_id": 0,
-//	 				"is_site_artist": false,
-//	 				"id": "15753",
-//	 				"name": "A-Lin"
-//	 			}
-//	 		],
-//	 		"aid": "5398612",
-//	 		"file_ext": "mp4",
-//	 		"sha256": "66e9653975ba2edf9fe5ed3c34101800efb138fb1709eebb52e1a3f8d75c88d8",
-//	 		"kbps": "128",
-//	 		"albumtitle": "寂寞不痛",
-//	 		"alert_msg": ""
-//	 	}
-//	 	]
-//	 };
-//	 var tpl = document.getElementById('tpl').innerHTML;
-//	 var music_content = juicer(tpl, data);
-//	 $("#content").html(music_content);
-//	 $("#myAudio").initAudio();
 
-	
+	<script>
+
 	function isArray(object) { 
 		return object != null && typeof object == "object" && 
 		'splice' in object && 'join' in object; 
 	} 
-	
+
 	function parseLyric(text) {
     	//将文本分隔成一行一行，存入数组
     	var lines = text.split('\n'),
@@ -163,7 +100,7 @@
 	    });
 	    return result;
 	}
-	
+
 	function get_lrc(song){
 		//console.log(song);
 		$.ajax({
@@ -206,11 +143,14 @@
 			}
 		});
 	}
-	
-	mui.plusReady(function(){
-        var self = plus.webview.currentWebview();
-		var channelid = self.channelid;
-		//var channelid = 1;
+
+	function getQuery(name){
+		var reg = new RegExp('(^|&)'+name+'=([^&]*)(&|$)');
+		var r = location.search.substr(1).match(reg);
+		return r ? decodeURIComponent(r[2]) : null;
+	}
+
+	function loadMusic(channelid){
 		$.ajax({
 			type:"get",
 			url:access_host+'getmusic.php?id='+channelid,
@@ -225,13 +165,61 @@
 				var music_content = juicer(tpl, data);
 				$("#content").html(music_content);
 				$("#myAudio").initAudio();
-				
-				get_lrc(result.song[0]['title']);
-	
+
+				if (result.song && result.song.length) {
+					get_lrc(result.song[0]['title']);
+				}
 			}
 		});
+	}
+
+	/* 切歌同步歌词（增强真实感：每首歌有各自的歌词） */
+	function currentSongTitle(){
+		var idx = $('.music_list li.active').index();
+		if (idx < 0) idx = 0;
+		return $('#myAudio source').eq(idx).attr('title') || '';
+	}
+	function reloadLyricForCurrent(){
+		var t = currentSongTitle();
+		if (t) { $('.music_lrc').empty(); get_lrc(t); }
+	}
+	$(function(){
+		// 点击上一首/下一首后同步歌词
+		$(document).on('click', '.btn_next, .btn_previous', function(){
+			setTimeout(reloadLyricForCurrent, 60);
+		});
+		// 点击歌单直接切歌并加载歌词
+		$(document).on('click', '.music_list li', function(){
+			var idx = $(this).index();
+			var $srcs = $('#myAudio source');
+			if (idx < 0 || idx >= $srcs.length) return;
+			var audio = $('#myAudio audio')[0];
+			if (!audio) return;
+			audio.src = $srcs.eq(idx).prop('src');
+			audio.play();
+			reloadLyricForCurrent();
+		});
+		// 底部 tab 栏：跨页导航回首页对应 tab（用捕获阶段拦截，绕过 mui 的 preventDefault 拦截）
+		document.addEventListener('click', function(e){
+			var a = e.target.closest ? e.target.closest('.mui-bar-tab a') : null;
+			if (!a) return;
+			e.preventDefault();
+			e.stopPropagation();
+			location.href = a.getAttribute('href');
+		}, true);
 	});
-		
+
+	if (mui.os && mui.os.plus) {
+		// 真机 5+ 环境
+		mui.plusReady(function(){
+			var self = plus.webview.currentWebview();
+			loadMusic(self.channelid || getQuery('channelid') || 1);
+		});
+	} else {
+		// 浏览器环境：参数通过 URL query 传递
+		$(function(){ loadMusic(getQuery('channelid') || 1); });
+	}
+
 	</script>
 </body>
 </html>
