@@ -2,47 +2,200 @@
 <html>
 	<head>
 		<meta charset="UTF-8">
-		<title>笑话</title>
+		<title>笑话详情</title>
 		<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
 		<script src="../js/jquery.min.js"></script>
 		<script src="../js/mui.min.js"></script>
 		<link href="../css/mui.min.css" rel="stylesheet"/>
+		<link href="../css/theme.css" rel="stylesheet"/>
+		<link href="../css/pages.css" rel="stylesheet"/>
 		<style>
-			.joke-detail { padding: 15px; }
-			.joke-detail h2 { font-size: 20px; color: #222; margin: 6px 0 12px; }
-			.joke-detail img { width: 100%; display: block; border-radius: 4px; }
-			.joke-detail p { line-height: 1.9; color: #444; font-size: 15px; margin-top: 14px; }
+			/* 独立详情页：内容区撑满导航栏与底部操作条之间 */
+			#jdWrap {
+				position: fixed;
+				top: 44px; bottom: 0; left: 0; right: 0;
+				overflow-y: auto;
+				-webkit-overflow-scrolling: touch;
+			}
 		</style>
 	</head>
-	<body>
-		<header class="mui-bar mui-bar-nav">
-			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+	<body class="lk-page">
+		<header class="mui-bar mui-bar-nav lk-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left" id="backBtn"></a>
 			<h1 class="mui-title">笑话</h1>
 		</header>
-		<div class="mui-content">
-			<div class="joke-detail">
-				<img id="joke-img" src="" alt=""/>
-				<p id="joke-text"></p>
+
+		<div id="jdWrap">
+			<div class="lk-jd-hero">
+				<img id="joke-img" src="" alt="" onload="this.style.visibility='visible'" onerror="this.style.visibility='hidden'">
+				<div class="lk-jd-hero-cap">
+					<h1 id="joke-title">笑话</h1>
+				</div>
+			</div>
+			<div class="lk-jd-body">
+				<div class="lk-jd-quote" id="joke-text"></div>
+				<div class="lk-jd-acts">
+					<button class="lk-btn lk-btn-ghost" id="btnCopy">
+						<svg viewBox="0 0 24 24"><path d="M16 1H4a2 2 0 0 0-2 2v14h2V3h12V1zm3 4H8a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2zm0 16H8V7h11v14z"/></svg>
+						复制
+					</button>
+					<button class="lk-btn lk-btn-ghost" id="btnAnother">
+						<svg viewBox="0 0 24 24"><path d="M17.65 6.35A7.96 7.96 0 0 0 12 4a8 8 0 1 0 7.73 10h-2.08A6 6 0 1 1 12 6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg>
+						换一条
+					</button>
+				</div>
+				<p class="lk-nd-tip">每天都有新段子 · 下拉返回列表继续看</p>
 			</div>
 		</div>
+
+		<div class="lk-toast" id="toast"></div>
+
+		<script>
+			function getQuery(name){
+				var reg = new RegExp('(^|&)'+name+'=([^&]*)(&|$)');
+				var r = location.search.substr(1).match(reg);
+				return r ? decodeURIComponent(r[2]) : null;
+			}
+
+			var access_host = (window.LK_API_HOST || (location.protocol + '//' + location.host)) + '/app_backend/';
+
+			function showToast(msg){
+				var $t = $('#toast');
+				$t.text(msg).addClass('show');
+				clearTimeout(showToast._t);
+				showToast._t = setTimeout(function(){ $t.removeClass('show'); }, 1800);
+			}
+
+			// 用 textContent 赋值，天然免疫 HTML 注入
+			function renderJoke(title, img, text){
+				document.title = title || '笑话';
+				$('.mui-bar-nav .mui-title').text('笑话');
+				$('#joke-title').text(title || '每日段子');
+				$('#joke-text').text(text || '');
+				var im = $('#joke-img');
+				if (img) {
+					// onerror 会把 visibility 设为 hidden，换图时必须一并恢复
+					im.attr('src', img).css('visibility', 'visible').show();
+				} else {
+					im.hide();
+				}
+				// 标题过长时收窄，保证不撑破布局
+				$('#joke-title').css('font-size', (title || '').length > 14 ? '18px' : '22px');
+			}
+
+			// 读取详情数据：浏览器走 sessionStorage，5+ 走 plus.storage，
+			// URL 参数作为最终兜底（避免长文本塞进 URL 被截断）
+			function readDetail(key){
+				var raw = null;
+				try { raw = sessionStorage.getItem(key); } catch (e) { /* 忽略 */ }
+				if (!raw) {
+					try {
+						if (window.plus && plus.storage) raw = plus.storage.getItem(key);
+					} catch (e) { /* 忽略 */ }
+				}
+				if (!raw) return null;
+				try { return JSON.parse(raw); } catch (e) { return null; }
+			}
+
+			$(function(){
+				var title = getQuery('title') || '';
+				var img = getQuery('img') || '';
+				var text = getQuery('text') || '';
+
+				var jid = getQuery('jid');
+				if (jid) {
+					var j = readDetail('lk_joke_' + jid);
+					if (j) {
+						title = j.title || title;
+						img = j.img || img;
+						text = j.text || text;
+					}
+				}
+				renderJoke(title, img, text);
+
+			// 浏览器环境：mui-action-back 不生效，改为 history.back
+			// 同时监听 tap：移动端 MUI 手势层会吃掉 click
+			var lkBackTap = 0;
+			function lkBackHandler(){
+				var now = Date.now();
+				if (now - lkBackTap < 400) return;
+				lkBackTap = now;
+				if (!(mui.os && mui.os.plus)) { history.back(); }
+			}
+			$('#backBtn').on('click', lkBackHandler);
+			$('#backBtn').on('tap', lkBackHandler);
+
+			// 复制段子
+			var lkCopyTap = 0;
+			function lkCopyHandler(){
+				var now = Date.now();
+				if (now - lkCopyTap < 400) return;
+				lkCopyTap = now;
+				var t = $('#joke-text').text();
+				if (!t) { showToast('没有可复制的内容'); return; }
+				if (navigator.clipboard && navigator.clipboard.writeText) {
+					navigator.clipboard.writeText(t).then(function(){
+						showToast('已复制到剪贴板');
+					}, function(){
+						fallbackCopy(t);
+					});
+				} else {
+					fallbackCopy(t);
+				}
+			}
+			$('#btnCopy').on('click', lkCopyHandler);
+			$('#btnCopy').on('tap', lkCopyHandler);
+
+			// 换一条：拉一条新段子
+			var lkAnotherTap = 0;
+			function lkAnotherHandler(){
+				var now = Date.now();
+				if (now - lkAnotherTap < 400) return;
+				lkAnotherTap = now;
+				var $b = $(this);
+				$b.prop('disabled', true);
+				$.ajax({
+					type: 'get',
+					url: access_host + 'getjoke.php?p=1',
+					dataType: 'json',
+					timeout: 15000
+				}).done(function(list){
+					if (!list || !list.length) { showToast('暂时没有新段子'); return; }
+					// 优先选一条与当前不同的
+					var pick = list[0];
+					for (var i = 0; i < list.length; i++) {
+						if (list[i].text !== $('#joke-text').text()) { pick = list[i]; break; }
+					}
+					renderJoke(pick.title, pick.img, pick.text);
+					showToast('换了一条新的');
+					$('#jdWrap').scrollTop(0);
+				}).fail(function(){
+					showToast('网络异常，换一条失败');
+				}).always(function(){
+					$b.prop('disabled', false);
+				});
+			}
+			$('#btnAnother').on('click', lkAnotherHandler);
+			$('#btnAnother').on('tap', lkAnotherHandler);
+			});
+
+			// 兼容无 clipboard API 的旧内核
+			function fallbackCopy(t){
+				var ta = document.createElement('textarea');
+				ta.value = t;
+				ta.style.position = 'fixed';
+				ta.style.opacity = '0';
+				document.body.appendChild(ta);
+				ta.select();
+				try {
+					document.execCommand('copy');
+					showToast('已复制到剪贴板');
+				} catch (e) {
+					showToast('复制失败，请长按选择文字');
+				}
+				document.body.removeChild(ta);
+			}
+		</script>
 	</body>
-	<script>
-		function getQuery(name){
-			var reg = new RegExp('(^|&)'+name+'=([^&]*)(&|$)');
-			var r = location.search.substr(1).match(reg);
-			return r ? decodeURIComponent(r[2]) : null;
-		}
-
-		$(function(){
-			var title = getQuery('title') || '笑话';
-			var img = getQuery('img') || '';
-			var text = getQuery('text') || '';
-
-			// 标题显示在顶部导航，正文区不再重复展示大标题
-			document.title = title;
-			$('.mui-bar-nav .mui-title').text(title);
-			$('#joke-img').prop('src', img);
-			$('#joke-text').text(text);
-		});
-	</script>
 </html>

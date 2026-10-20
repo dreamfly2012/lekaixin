@@ -1,257 +1,275 @@
 {
-  "channels": {
-    "0": {
-      "name": "私人兆赫"
-    },
-    "1": {
-      "name": "华语"
-    },
-    "2": {
-      "name": "欧美"
-    }
+ "channels": {
+  "0": {
+   "name": "私人兆赫"
   },
-  "songs_by_channel": {
-    "0": [
-      {
-        "title": "友谊地久天长",
-        "artist": "苏格兰民歌",
-        "album": "私人兆赫",
-        "picture": "/img/covers/cover_01.svg",
-        "url": "/audio/song_01.wav",
-        "length": 8
-      },
-      {
-        "title": "晚风",
-        "artist": "老鹰乐队",
-        "album": "私人兆赫",
-        "picture": "/img/covers/cover_02.svg",
-        "url": "/audio/song_02.wav",
-        "length": 7
-      },
-      {
-        "title": "夜的第七章",
-        "artist": "周杰伦",
-        "album": "私人兆赫",
-        "picture": "/img/covers/cover_03.svg",
-        "url": "/audio/song_03.wav",
-        "length": 7
-      },
-      {
-        "title": "晴天",
-        "artist": "周杰伦",
-        "album": "私人兆赫",
-        "picture": "/img/covers/cover_04.svg",
-        "url": "/audio/song_04.wav",
-        "length": 7
-      },
-      {
-        "title": "后来",
-        "artist": "刘若英",
-        "album": "私人兆赫",
-        "picture": "/img/covers/cover_05.svg",
-        "url": "/audio/song_05.wav",
-        "length": 7
-      }
-    ],
-    "1": [
-      {
-        "title": "稻香",
-        "artist": "周杰伦",
-        "album": "华语",
-        "picture": "/img/covers/cover_06.svg",
-        "url": "/audio/song_06.wav",
-        "length": 7
-      },
-      {
-        "title": "青花瓷",
-        "artist": "周杰伦",
-        "album": "华语",
-        "picture": "/img/covers/cover_07.svg",
-        "url": "/audio/song_07.wav",
-        "length": 7
-      },
-      {
-        "title": "七里香",
-        "artist": "周杰伦",
-        "album": "华语",
-        "picture": "/img/covers/cover_08.svg",
-        "url": "/audio/song_08.wav",
-        "length": 7
-      },
-      {
-        "title": "枫",
-        "artist": "周杰伦",
-        "album": "华语",
-        "picture": "/img/covers/cover_09.svg",
-        "url": "/audio/song_09.wav",
-        "length": 7
-      },
-      {
-        "title": "彩虹",
-        "artist": "周杰伦",
-        "album": "华语",
-        "picture": "/img/covers/cover_10.svg",
-        "url": "/audio/song_10.wav",
-        "length": 7
-      }
-    ],
-    "2": [
-      {
-        "title": "Shape of You",
-        "artist": "Ed Sheeran",
-        "album": "欧美",
-        "picture": "/img/covers/cover_11.svg",
-        "url": "/audio/song_11.wav",
-        "length": 7
-      },
-      {
-        "title": "Perfect",
-        "artist": "Ed Sheeran",
-        "album": "欧美",
-        "picture": "/img/covers/cover_12.svg",
-        "url": "/audio/song_12.wav",
-        "length": 7
-      },
-      {
-        "title": "Blinding Lights",
-        "artist": "The Weeknd",
-        "album": "欧美",
-        "picture": "/img/covers/cover_13.svg",
-        "url": "/audio/song_13.wav",
-        "length": 7
-      },
-      {
-        "title": "Someone Like You",
-        "artist": "Adele",
-        "album": "欧美",
-        "picture": "/img/covers/cover_14.svg",
-        "url": "/audio/song_14.wav",
-        "length": 7
-      },
-      {
-        "title": "Levitating",
-        "artist": "Dua Lipa",
-        "album": "欧美",
-        "picture": "/img/covers/cover_15.svg",
-        "url": "/audio/song_15.wav",
-        "length": 7
-      }
-    ]
+  "1": {
+   "name": "华语"
   },
-  "lyrics_by_title": {
-    "友谊地久天长": "[00:00.00]友谊地久天长\n[00:05.20]怎能忘记旧日朋友\n[00:10.40]心中能不怀想\n[00:15.60]旧日朋友岂能相忘\n[00:20.80]友谊地久天长\n[00:26.00]我们曾经终日游荡\n[00:31.20]在故乡的青山上",
-    "晚风": "[00:00.00]晚风轻拂过山岗\n[00:05.00]吹散白日的匆忙\n[00:10.00]我把心事交给星空\n[00:15.00]等一场温柔的梦\n[00:20.00]晚风请你慢些走\n[00:25.00]陪我把夜色看够",
-    "夜的第七章": "[00:00.00]夜色翻开第七章\n[00:05.00]月光写在窗台上\n[00:10.00]谜底藏在风里面\n[00:15.00]谁在轻声哼着念想\n[00:20.00]故事走到第七章\n[00:25.00]天快亮了别慌张",
-    "晴天": "[00:00.00]故事的小黄花\n[00:05.00]从出生那年就飘着\n[00:10.00]童年的荡秋千\n[00:15.00]随记忆一直晃到现在\n[00:20.00]吹着前奏望着天空\n[00:25.00]我想起花瓣试着掉落",
-    "后来": "[00:00.00]后来我总算学会了\n[00:05.00]如何去爱\n[00:10.00]可惜你早已远去\n[00:15.00]消失在人海\n[00:20.00]后来终于在眼泪中\n[00:25.00]明白有些人一旦错过",
-    "稻香": "[00:00.00]对这个世界如果你有太多的抱怨\n[00:05.00]跌倒了就不敢继续往前走\n[00:10.00]为什么人要这么的脆弱\n[00:15.00]请你打开电视看看\n[00:20.00]多少人为生命在努力\n[00:25.00]勇敢的走下去",
-    "青花瓷": "[00:00.00]素胚勾勒出青花笔锋浓转淡\n[00:05.00]瓶身描绘的牡丹一如你初妆\n[00:10.00]冉冉檀香透过窗心事我了然\n[00:15.00]宣纸上走笔至此搁一半\n[00:20.00]釉色渲染仕女图韵味被私藏",
-    "七里香": "[00:00.00]窗外的麻雀在电线杆上多嘴\n[00:05.00]你说这一句很有夏天的感觉\n[00:10.00]手中的铅笔在纸上来来回回\n[00:15.00]我用几行字形容你是我的谁\n[00:20.00]秋刀鱼的滋味猫跟你都想了解",
-    "枫": "[00:00.00]乌云在我们心里搁下一块阴影\n[00:05.00]我聆听沉寂已久的心情\n[00:10.00]清晰透明的你空气中找寻你\n[00:15.00]有些事情总说不清\n[00:20.00]只是感觉 lost in the song",
-    "彩虹": "[00:00.00]哪里有彩虹告诉我\n[00:05.00]能不能把我的愿望还给我\n[00:10.00]为什么天这么安静\n[00:15.00]所有的云都跑到我这里\n[00:20.00]有没有口罩让我呼吸",
-    "Shape of You": "[00:00.00]The club isn't the best place to find a lover\n[00:05.00]So the bar is where I go\n[00:10.00]Me and my friends at the table doing shots\n[00:15.00]Drinking fast and then we talk slow\n[00:20.00]Come over and start up a conversation",
-    "Perfect": "[00:00.00]I found a love for me\n[00:05.00]Darling just dive right in and follow my lead\n[00:10.00]Well I found a girl beautiful and sweet\n[00:15.00]Oh I never knew you were the someone waiting for me\n[00:20.00]Cause we were just kids",
-    "Blinding Lights": "[00:00.00]I've been tryna call\n[00:05.00]I've been on my own for long enough\n[00:10.00]Maybe you can show me how to love\n[00:15.00]When it's over, I'm the one who's lost it all\n[00:20.00]I'm off the deep end",
-    "Someone Like You": "[00:00.00]I heard that you're settled down\n[00:05.00]That you found a girl and you're married now\n[00:10.00]I heard that your dreams came true\n[00:15.00]Guess she gave you things I didn't give to you\n[00:20.00]Old friend, why are you so shy",
-    "Levitating": "[00:00.00]If you wanna run away with me\n[00:05.00]I know a galaxy and I can take you for a ride\n[00:10.00]I had a premonition that we fell into a rhythm\n[00:15.00]Where the music don't stop for life\n[00:20.00]Glitter in the sky"
-  },
-  "baijia": [
-    {
-      "ID": 1001,
-      "m_title": "今日趣闻：橘猫占领了图书馆",
-      "m_summary": "一只橘猫连续三天光顾市图书馆，已经成为读者们的团宠与“常驻管理员”。",
-      "m_image_url": "/img/baijia/bj1001.svg"
-    },
-    {
-      "ID": 1002,
-      "m_title": "科技前沿：可折叠屏幕再进化",
-      "m_summary": "新一代柔性屏在耐折次数上实现数量级突破，折叠屏手机离“随便折”又近了一步。",
-      "m_image_url": "/img/baijia/bj1002.svg"
-    },
-    {
-      "ID": 1003,
-      "m_title": "生活家：十分钟搞定一周早餐",
-      "m_summary": "三款高蛋白快手食谱，让你告别饿着肚子上班的早晨。",
-      "m_image_url": "/img/baijia/bj1003.svg"
-    },
-    {
-      "ID": 1004,
-      "m_title": "旅行志：小众古镇的慢生活",
-      "m_summary": "避开人潮，这些藏在山水间的小镇，藏着最舒服的周末。",
-      "m_image_url": "/img/baijia/bj1004.svg"
-    },
-    {
-      "ID": 1005,
-      "m_title": "健康课：久坐族的拉伸指南",
-      "m_summary": "五个动作缓解腰酸背痛，办公室也能练。",
-      "m_image_url": "/img/baijia/bj1005.svg"
-    },
-    {
-      "ID": 1006,
-      "m_title": "影评：今年最被低估的一部国产片",
-      "m_summary": "没有大牌，却把普通人的故事讲进了心里。",
-      "m_image_url": "/img/baijia/bj1006.svg"
-    }
+  "2": {
+   "name": "欧美"
+  }
+ },
+ "songs_by_channel": {
+  "0": [
+   {
+    "title": "友谊地久天长",
+    "artist": "苏格兰民歌",
+    "album": "私人兆赫",
+    "picture": "/img/covers/cover_01.svg",
+    "url": "/audio/song_01.wav",
+    "length": 8
+   },
+   {
+    "title": "晚风",
+    "artist": "老鹰乐队",
+    "album": "私人兆赫",
+    "picture": "/img/covers/cover_02.svg",
+    "url": "/audio/song_02.wav",
+    "length": 7
+   },
+   {
+    "title": "夜的第七章",
+    "artist": "周杰伦",
+    "album": "私人兆赫",
+    "picture": "/img/covers/cover_03.svg",
+    "url": "/audio/song_03.wav",
+    "length": 7
+   },
+   {
+    "title": "晴天",
+    "artist": "周杰伦",
+    "album": "私人兆赫",
+    "picture": "/img/covers/cover_04.svg",
+    "url": "/audio/song_04.wav",
+    "length": 7
+   },
+   {
+    "title": "后来",
+    "artist": "刘若英",
+    "album": "私人兆赫",
+    "picture": "/img/covers/cover_05.svg",
+    "url": "/audio/song_05.wav",
+    "length": 7
+   }
   ],
-  "baijia_content": {
-    "1001": "\n    <div class=\"bk-detail\">\n      <img class=\"lazy-lozd\" src=\"/img/baijia/bj1001.svg\" style=\"width:100%;display:block;margin:12px 0;\" alt=\"封面\">\n      <p style=\"padding:12px 16px;line-height:1.9;color:#333;font-size:17px;margin:0;\">周三上午，市图书馆的阅览室里多了一位“不速之客”——一只胖乎乎的橘猫，正大摇大摆地趴在归还台上，仿佛在检查每一本书的借阅记录。</p><p style=\"padding:12px 16px;line-height:1.9;color:#333;font-size:17px;margin:0;\">据馆员介绍，这只橘猫已经连续三天准时“上班”，读者们自发给它起了名字叫“管理员二号”。有人专门带猫条来“上供”，也有人在社交平台晒出它打盹的照片，迅速登上本地热搜。</p><p style=\"padding:12px 16px;line-height:1.9;color:#333;font-size:17px;margin:0;\">图书馆方面表示，只要不影响正常秩序，欢迎这位特殊读者“打卡”。不过也提醒市民：投喂请适度，别把猫喂得太圆，毕竟它还要爬书架。</p>\n      <p style=\"padding:0 16px 26px;line-height:1.8;color:#999;font-size:13px;\">—— 本文为本地模拟数据，用于演示「乐开心」详情页图文渲染。</p>\n    </div>",
-    "1002": "\n    <div class=\"bk-detail\">\n      <img class=\"lazy-lozd\" src=\"/img/baijia/bj1002.svg\" style=\"width:100%;display:block;margin:12px 0;\" alt=\"封面\">\n      <p style=\"padding:12px 16px;line-height:1.9;color:#333;font-size:17px;margin:0;\">近日，多家面板厂商披露了新一代柔性 OLED 的最新测试数据：在常温环境下，屏幕可承受的折叠次数从此前的二十万次提升到超过一百万次，相当于每天折一百次也能用上二十七年。</p><p style=\"padding:12px 16px;line-height:1.9;color:#333;font-size:17px;margin:0;\">更关键的是折痕问题得到明显改善。通过新型中性层材料与更薄的封装结构，展开后的可见折痕在多数光线条件下几乎不可见，观感接近直板屏。</p><p style=\"padding:12px 16px;line-height:1.9;color:#333;font-size:17px;margin:0;\">行业分析师认为，随着良率提升与成本下探，折叠屏有望在两年内从“旗舰尝鲜”走向“主流标配”，改写手机的形态定义。</p>\n      <p style=\"padding:0 16px 26px;line-height:1.8;color:#999;font-size:13px;\">—— 本文为本地模拟数据，用于演示「乐开心」详情页图文渲染。</p>\n    </div>",
-    "1003": "\n    <div class=\"bk-detail\">\n      <img class=\"lazy-lozd\" src=\"/img/baijia/bj1003.svg\" style=\"width:100%;display:block;margin:12px 0;\" alt=\"封面\">\n      <p style=\"padding:12px 16px;line-height:1.9;color:#333;font-size:17px;margin:0;\">工作日最难的不是起床，而是“今天吃什么”。其实只要周末花十分钟备餐，就能换来一整周的从容。</p><p style=\"padding:12px 16px;line-height:1.9;color:#333;font-size:17px;margin:0;\">第一款：隔夜燕麦。燕麦、牛奶、奇亚籽与香蕉睡前拌匀放冰箱，早上直接吃；第二款：茶叶蛋+全麦面包，蛋白质与碳水一次补齐；第三款：提前蒸好的鸡蛋羹，微波三十秒即食。</p><p style=\"padding:12px 16px;line-height:1.9;color:#333;font-size:17px;margin:0;\">三款轮换不重样，蛋白质拉满、耗时极短。坚持一周，你会发现上午的注意力都更稳了。</p>\n      <p style=\"padding:0 16px 26px;line-height:1.8;color:#999;font-size:13px;\">—— 本文为本地模拟数据，用于演示「乐开心」详情页图文渲染。</p>\n    </div>",
-    "1004": "\n    <div class=\"bk-detail\">\n      <img class=\"lazy-lozd\" src=\"/img/baijia/bj1004.svg\" style=\"width:100%;display:block;margin:12px 0;\" alt=\"封面\">\n      <p style=\"padding:12px 16px;line-height:1.9;color:#333;font-size:17px;margin:0;\">如果你也受够了人挤人的网红景点，不如把目光投向那些未被过度开发的水乡小镇。没有排队两小时的网红店，只有清晨的薄雾和吱呀作响的木桥。</p><p style=\"padding:12px 16px;line-height:1.9;color:#333;font-size:17px;margin:0;\">白天可以沿河慢走，看老人在桥头晒太阳；入夜后找一家临水民宿，听雨打青瓦。节奏慢下来，连呼吸都变得轻盈。</p><p style=\"padding:12px 16px;line-height:1.9;color:#333;font-size:17px;margin:0;\">建议工作日前往，住宿与体验都更安静。带上书和相机，把手机调成免打扰，这趟旅程的意义本就是“什么都不做”。</p>\n      <p style=\"padding:0 16px 26px;line-height:1.8;color:#999;font-size:13px;\">—— 本文为本地模拟数据，用于演示「乐开心」详情页图文渲染。</p>\n    </div>",
-    "1005": "\n    <div class=\"bk-detail\">\n      <img class=\"lazy-lozd\" src=\"/img/baijia/bj1005.svg\" style=\"width:100%;display:block;margin:12px 0;\" alt=\"封面\">\n      <p style=\"padding:12px 16px;line-height:1.9;color:#333;font-size:17px;margin:0;\">长时间伏案，颈椎与腰椎最先“抗议”。其实每隔一小时花三分钟拉伸，就能显著缓解僵硬。</p><p style=\"padding:12px 16px;line-height:1.9;color:#333;font-size:17px;margin:0;\">动作一：扩胸后仰，打开胸椎；动作二：坐姿体前屈，放松下背；动作三：颈部侧拉伸；动作四：站姿髋屈肌拉伸；动作五：踝泵促进循环。每个动作保持 20 秒，循序渐进。</p><p style=\"padding:12px 16px;line-height:1.9;color:#333;font-size:17px;margin:0;\">拉伸不是越痛越有效，感到轻微牵拉感即可。坚持两周，肩颈的“紧绷感”会明显减轻。</p>\n      <p style=\"padding:0 16px 26px;line-height:1.8;color:#999;font-size:13px;\">—— 本文为本地模拟数据，用于演示「乐开心」详情页图文渲染。</p>\n    </div>",
-    "1006": "\n    <div class=\"bk-detail\">\n      <img class=\"lazy-lozd\" src=\"/img/baijia/bj1006.svg\" style=\"width:100%;display:block;margin:12px 0;\" alt=\"封面\">\n      <p style=\"padding:12px 16px;line-height:1.9;color:#333;font-size:17px;margin:0;\">今年的院线片里，这部小成本作品是最被低估的一匹黑马。没有流量明星，没有宏大特效，镜头却牢牢钉在普通人身上。</p><p style=\"padding:12px 16px;line-height:1.9;color:#333;font-size:17px;margin:0;\">导演用近乎纪录片的质感，拍下了一对父子在时代缝隙里的拉扯。台词克制，情绪却绵密，散场后很久都走不出来。</p><p style=\"padding:12px 16px;line-height:1.9;color:#333;font-size:17px;margin:0;\">它提醒我们：好电影不靠声量取胜，而靠真诚。如果你厌倦了爆米花式的喧嚣，这部值得走进影院认真看一次。</p>\n      <p style=\"padding:0 16px 26px;line-height:1.8;color:#999;font-size:13px;\">—— 本文为本地模拟数据，用于演示「乐开心」详情页图文渲染。</p>\n    </div>"
-  },
-  "jokes": [
-    {
-      "title": "程序员去超市",
-      "img": "/img/jokes/jk01.svg",
-      "text": "程序员去超市买东西，老板问：要几个？程序员：先给我来一个，我再循环要剩下的。"
-    },
-    {
-      "title": "Bug 的哲学",
-      "img": "/img/jokes/jk02.svg",
-      "text": "世界上唯一不变的就是 Bug 永远改不完。"
-    },
-    {
-      "title": "面试",
-      "img": "/img/jokes/jk03.svg",
-      "text": "面试官：你会什么？我：我会让程序跑起来。面试官：可它现在跑不起来。我：所以我才来面试。"
-    },
-    {
-      "title": "时钟",
-      "img": "/img/jokes/jk04.svg",
-      "text": "秒针对分针说：你走一步我得走六十步，这就是职场。"
-    },
-    {
-      "title": "Wi-Fi",
-      "img": "/img/jokes/jk05.svg",
-      "text": "世界上最远的距离，是满格 Wi-Fi 却连不上。"
-    },
-    {
-      "title": "减肥",
-      "img": "/img/jokes/jk06.svg",
-      "text": "我减肥的方法很简单：把“明天开始”这四个字念了一年。"
-    },
-    {
-      "title": "开会",
-      "img": "/img/jokes/jk07.svg",
-      "text": "一个小时的会，前五十分钟在等人，后十分钟决定了下次会议的时间。"
-    },
-    {
-      "title": "猫",
-      "img": "/img/jokes/jk08.svg",
-      "text": "猫主子调试代码的方式：把你的键盘当床。"
-    },
-    {
-      "title": "咖啡",
-      "img": "/img/jokes/jk09.svg",
-      "text": "程序员的三大支柱：咖啡、代码、和“再试一次”。"
-    },
-    {
-      "title": "加班",
-      "img": "/img/jokes/jk10.svg",
-      "text": "加班不可怕，可怕的是加班后发现 Bug 是上午自己写的。"
-    }
+  "1": [
+   {
+    "title": "稻香",
+    "artist": "周杰伦",
+    "album": "华语",
+    "picture": "/img/covers/cover_06.svg",
+    "url": "/audio/song_06.wav",
+    "length": 7
+   },
+   {
+    "title": "青花瓷",
+    "artist": "周杰伦",
+    "album": "华语",
+    "picture": "/img/covers/cover_07.svg",
+    "url": "/audio/song_07.wav",
+    "length": 7
+   },
+   {
+    "title": "七里香",
+    "artist": "周杰伦",
+    "album": "华语",
+    "picture": "/img/covers/cover_08.svg",
+    "url": "/audio/song_08.wav",
+    "length": 7
+   },
+   {
+    "title": "枫",
+    "artist": "周杰伦",
+    "album": "华语",
+    "picture": "/img/covers/cover_09.svg",
+    "url": "/audio/song_09.wav",
+    "length": 7
+   },
+   {
+    "title": "彩虹",
+    "artist": "周杰伦",
+    "album": "华语",
+    "picture": "/img/covers/cover_10.svg",
+    "url": "/audio/song_10.wav",
+    "length": 7
+   }
   ],
-  "about": "<!DOCTYPE html><html><head><meta charset=\"utf-8\">\n  <meta name=\"viewport\" content=\"width=device-width,initial-scale=1,user-scalable=no\">\n  <title>关于乐开心</title>\n  <style>\n    body{font-family:PingFang SC,Microsoft YaHei,sans-serif;margin:0;padding:40px 20px;color:#333;background:#fafafa;}\n    h1{font-size:24px;} .box{max-width:640px;margin:0 auto;background:#fff;padding:24px;border-radius:10px;box-shadow:0 2px 12px rgba(0,0,0,.06);}\n    code{background:#f0f0f0;padding:2px 6px;border-radius:4px;}\n  </style></head>\n  <body><div class=\"box\">\n    <h1>关于「乐开心」</h1>\n    <p>这是一个基于 DCloud MUI 开发的音乐笑话小应用。</p>\n    <p>当前由本地开发服务 <code>server.js</code> 提供<b>真实模拟数据</b>与静态托管：歌曲为本地合成可播放旋律，百家与笑话均带真实配图与正文，后端接口前缀为 <code>/app_backend/</code>。</p>\n    <p>原远程后端 <code>www.80shihua.com/app_backend</code> 已失效，本仓库已重构为可在本地浏览器直接运行。</p>\n  </div></body></html>"
+  "2": [
+   {
+    "title": "Shape of You",
+    "artist": "Ed Sheeran",
+    "album": "欧美",
+    "picture": "/img/covers/cover_11.svg",
+    "url": "/audio/song_11.wav",
+    "length": 7
+   },
+   {
+    "title": "Perfect",
+    "artist": "Ed Sheeran",
+    "album": "欧美",
+    "picture": "/img/covers/cover_12.svg",
+    "url": "/audio/song_12.wav",
+    "length": 7
+   },
+   {
+    "title": "Blinding Lights",
+    "artist": "The Weeknd",
+    "album": "欧美",
+    "picture": "/img/covers/cover_13.svg",
+    "url": "/audio/song_13.wav",
+    "length": 7
+   },
+   {
+    "title": "Someone Like You",
+    "artist": "Adele",
+    "album": "欧美",
+    "picture": "/img/covers/cover_14.svg",
+    "url": "/audio/song_14.wav",
+    "length": 7
+   },
+   {
+    "title": "Levitating",
+    "artist": "Dua Lipa",
+    "album": "欧美",
+    "picture": "/img/covers/cover_15.svg",
+    "url": "/audio/song_15.wav",
+    "length": 7
+   }
+  ]
+ },
+ "lyrics_by_title": {
+  "友谊地久天长": "[00:00.00]友谊地久天长\n[00:05.20]怎能忘记旧日朋友\n[00:10.40]心中能不怀想\n[00:15.60]旧日朋友岂能相忘\n[00:20.80]友谊地久天长\n[00:26.00]我们曾经终日游荡\n[00:31.20]在故乡的青山上",
+  "晚风": "[00:00.00]晚风轻拂过山岗\n[00:05.00]吹散白日的匆忙\n[00:10.00]我把心事交给星空\n[00:15.00]等一场温柔的梦\n[00:20.00]晚风请你慢些走\n[00:25.00]陪我把夜色看够",
+  "夜的第七章": "[00:00.00]夜色翻开第七章\n[00:05.00]月光写在窗台上\n[00:10.00]谜底藏在风里面\n[00:15.00]谁在轻声哼着念想\n[00:20.00]故事走到第七章\n[00:25.00]天快亮了别慌张",
+  "晴天": "[00:00.00]故事的小黄花\n[00:05.00]从出生那年就飘着\n[00:10.00]童年的荡秋千\n[00:15.00]随记忆一直晃到现在\n[00:20.00]吹着前奏望着天空\n[00:25.00]我想起花瓣试着掉落",
+  "后来": "[00:00.00]后来我总算学会了\n[00:05.00]如何去爱\n[00:10.00]可惜你早已远去\n[00:15.00]消失在人海\n[00:20.00]后来终于在眼泪中\n[00:25.00]明白有些人一旦错过",
+  "稻香": "[00:00.00]对这个世界如果你有太多的抱怨\n[00:05.00]跌倒了就不敢继续往前走\n[00:10.00]为什么人要这么的脆弱\n[00:15.00]请你打开电视看看\n[00:20.00]多少人为生命在努力\n[00:25.00]勇敢的走下去",
+  "青花瓷": "[00:00.00]素胚勾勒出青花笔锋浓转淡\n[00:05.00]瓶身描绘的牡丹一如你初妆\n[00:10.00]冉冉檀香透过窗心事我了然\n[00:15.00]宣纸上走笔至此搁一半\n[00:20.00]釉色渲染仕女图韵味被私藏",
+  "七里香": "[00:00.00]窗外的麻雀在电线杆上多嘴\n[00:05.00]你说这一句很有夏天的感觉\n[00:10.00]手中的铅笔在纸上来来回回\n[00:15.00]我用几行字形容你是我的谁\n[00:20.00]秋刀鱼的滋味猫跟你都想了解",
+  "枫": "[00:00.00]乌云在我们心里搁下一块阴影\n[00:05.00]我聆听沉寂已久的心情\n[00:10.00]清晰透明的你空气中找寻你\n[00:15.00]有些事情总说不清\n[00:20.00]只是感觉 lost in the song",
+  "彩虹": "[00:00.00]哪里有彩虹告诉我\n[00:05.00]能不能把我的愿望还给我\n[00:10.00]为什么天这么安静\n[00:15.00]所有的云都跑到我这里\n[00:20.00]有没有口罩让我呼吸",
+  "Shape of You": "[00:00.00]The club isn't the best place to find a lover\n[00:05.00]So the bar is where I go\n[00:10.00]Me and my friends at the table doing shots\n[00:15.00]Drinking fast and then we talk slow\n[00:20.00]Come over and start up a conversation",
+  "Perfect": "[00:00.00]I found a love for me\n[00:05.00]Darling just dive right in and follow my lead\n[00:10.00]Well I found a girl beautiful and sweet\n[00:15.00]Oh I never knew you were the someone waiting for me\n[00:20.00]Cause we were just kids",
+  "Blinding Lights": "[00:00.00]I've been tryna call\n[00:05.00]I've been on my own for long enough\n[00:10.00]Maybe you can show me how to love\n[00:15.00]When it's over, I'm the one who's lost it all\n[00:20.00]I'm off the deep end",
+  "Someone Like You": "[00:00.00]I heard that you're settled down\n[00:05.00]That you found a girl and you're married now\n[00:10.00]I heard that your dreams came true\n[00:15.00]Guess she gave you things I didn't give to you\n[00:20.00]Old friend, why are you so shy",
+  "Levitating": "[00:00.00]If you wanna run away with me\n[00:05.00]I know a galaxy and I can take you for a ride\n[00:10.00]I had a premonition that we fell into a rhythm\n[00:15.00]Where the music don't stop for life\n[00:20.00]Glitter in the sky"
+ },
+ "baijia": [
+  {
+   "ID": 1001,
+   "m_title": "今日趣闻：橘猫占领了图书馆",
+   "m_summary": "一只橘猫连续三天光顾市图书馆，已经成为读者们的团宠与“常驻管理员”。",
+   "m_image_url": "/img/baijia/bj1001.svg",
+   "m_url": "mock://1001",
+   "m_source": "趣闻",
+   "m_published": "2026-10-18 09:12:00"
+  },
+  {
+   "ID": 1002,
+   "m_title": "科技前沿：可折叠屏幕再进化",
+   "m_summary": "新一代柔性屏在耐折次数上实现数量级突破，折叠屏手机离“随便折”又近了一步。",
+   "m_image_url": "/img/baijia/bj1002.svg",
+   "m_url": "mock://1002",
+   "m_source": "科技",
+   "m_published": "2026-10-18 10:30:00"
+  },
+  {
+   "ID": 1003,
+   "m_title": "生活家：十分钟搞定一周早餐",
+   "m_summary": "三款高蛋白快手食谱，让你告别饿着肚子上班的早晨。",
+   "m_image_url": "/img/baijia/bj1003.svg",
+   "m_url": "mock://1003",
+   "m_source": "生活",
+   "m_published": "2026-10-18 11:05:00"
+  },
+  {
+   "ID": 1004,
+   "m_title": "旅行志：小众古镇的慢生活",
+   "m_summary": "避开人潮，这些藏在山水间的小镇，藏着最舒服的周末。",
+   "m_image_url": "/img/baijia/bj1004.svg",
+   "m_url": "mock://1004",
+   "m_source": "旅行",
+   "m_published": "2026-10-18 12:20:00"
+  },
+  {
+   "ID": 1005,
+   "m_title": "健康课：久坐族的拉伸指南",
+   "m_summary": "五个动作缓解腰酸背痛，办公室也能练。",
+   "m_image_url": "/img/baijia/bj1005.svg",
+   "m_url": "mock://1005",
+   "m_source": "健康",
+   "m_published": "2026-10-18 13:45:00"
+  },
+  {
+   "ID": 1006,
+   "m_title": "影评：今年最被低估的一部国产片",
+   "m_summary": "没有大牌，却把普通人的故事讲进了心里。",
+   "m_image_url": "/img/baijia/bj1006.svg",
+   "m_url": "mock://1006",
+   "m_source": "影评",
+   "m_published": "2026-10-18 15:00:00"
+  }
+ ],
+ "baijia_content": {
+  "1001": "\n    <div class=\"bk-detail\">\n      <img class=\"lazy-lozd\" src=\"/img/baijia/bj1001.svg\" style=\"width:100%;display:block;margin:12px 0;\" alt=\"封面\">\n      <p style=\"padding:12px 16px;line-height:1.9;color:#333;font-size:17px;margin:0;\">周三上午，市图书馆的阅览室里多了一位“不速之客”——一只胖乎乎的橘猫，正大摇大摆地趴在归还台上，仿佛在检查每一本书的借阅记录。</p><p style=\"padding:12px 16px;line-height:1.9;color:#333;font-size:17px;margin:0;\">据馆员介绍，这只橘猫已经连续三天准时“上班”，读者们自发给它起了名字叫“管理员二号”。有人专门带猫条来“上供”，也有人在社交平台晒出它打盹的照片，迅速登上本地热搜。</p><p style=\"padding:12px 16px;line-height:1.9;color:#333;font-size:17px;margin:0;\">图书馆方面表示，只要不影响正常秩序，欢迎这位特殊读者“打卡”。不过也提醒市民：投喂请适度，别把猫喂得太圆，毕竟它还要爬书架。</p>\n      <p style=\"padding:0 16px 26px;line-height:1.8;color:#999;font-size:13px;\">—— 本文为本地模拟数据，用于演示「乐开心」详情页图文渲染。</p>\n    </div>",
+  "1002": "\n    <div class=\"bk-detail\">\n      <img class=\"lazy-lozd\" src=\"/img/baijia/bj1002.svg\" style=\"width:100%;display:block;margin:12px 0;\" alt=\"封面\">\n      <p style=\"padding:12px 16px;line-height:1.9;color:#333;font-size:17px;margin:0;\">近日，多家面板厂商披露了新一代柔性 OLED 的最新测试数据：在常温环境下，屏幕可承受的折叠次数从此前的二十万次提升到超过一百万次，相当于每天折一百次也能用上二十七年。</p><p style=\"padding:12px 16px;line-height:1.9;color:#333;font-size:17px;margin:0;\">更关键的是折痕问题得到明显改善。通过新型中性层材料与更薄的封装结构，展开后的可见折痕在多数光线条件下几乎不可见，观感接近直板屏。</p><p style=\"padding:12px 16px;line-height:1.9;color:#333;font-size:17px;margin:0;\">行业分析师认为，随着良率提升与成本下探，折叠屏有望在两年内从“旗舰尝鲜”走向“主流标配”，改写手机的形态定义。</p>\n      <p style=\"padding:0 16px 26px;line-height:1.8;color:#999;font-size:13px;\">—— 本文为本地模拟数据，用于演示「乐开心」详情页图文渲染。</p>\n    </div>",
+  "1003": "\n    <div class=\"bk-detail\">\n      <img class=\"lazy-lozd\" src=\"/img/baijia/bj1003.svg\" style=\"width:100%;display:block;margin:12px 0;\" alt=\"封面\">\n      <p style=\"padding:12px 16px;line-height:1.9;color:#333;font-size:17px;margin:0;\">工作日最难的不是起床，而是“今天吃什么”。其实只要周末花十分钟备餐，就能换来一整周的从容。</p><p style=\"padding:12px 16px;line-height:1.9;color:#333;font-size:17px;margin:0;\">第一款：隔夜燕麦。燕麦、牛奶、奇亚籽与香蕉睡前拌匀放冰箱，早上直接吃；第二款：茶叶蛋+全麦面包，蛋白质与碳水一次补齐；第三款：提前蒸好的鸡蛋羹，微波三十秒即食。</p><p style=\"padding:12px 16px;line-height:1.9;color:#333;font-size:17px;margin:0;\">三款轮换不重样，蛋白质拉满、耗时极短。坚持一周，你会发现上午的注意力都更稳了。</p>\n      <p style=\"padding:0 16px 26px;line-height:1.8;color:#999;font-size:13px;\">—— 本文为本地模拟数据，用于演示「乐开心」详情页图文渲染。</p>\n    </div>",
+  "1004": "\n    <div class=\"bk-detail\">\n      <img class=\"lazy-lozd\" src=\"/img/baijia/bj1004.svg\" style=\"width:100%;display:block;margin:12px 0;\" alt=\"封面\">\n      <p style=\"padding:12px 16px;line-height:1.9;color:#333;font-size:17px;margin:0;\">如果你也受够了人挤人的网红景点，不如把目光投向那些未被过度开发的水乡小镇。没有排队两小时的网红店，只有清晨的薄雾和吱呀作响的木桥。</p><p style=\"padding:12px 16px;line-height:1.9;color:#333;font-size:17px;margin:0;\">白天可以沿河慢走，看老人在桥头晒太阳；入夜后找一家临水民宿，听雨打青瓦。节奏慢下来，连呼吸都变得轻盈。</p><p style=\"padding:12px 16px;line-height:1.9;color:#333;font-size:17px;margin:0;\">建议工作日前往，住宿与体验都更安静。带上书和相机，把手机调成免打扰，这趟旅程的意义本就是“什么都不做”。</p>\n      <p style=\"padding:0 16px 26px;line-height:1.8;color:#999;font-size:13px;\">—— 本文为本地模拟数据，用于演示「乐开心」详情页图文渲染。</p>\n    </div>",
+  "1005": "\n    <div class=\"bk-detail\">\n      <img class=\"lazy-lozd\" src=\"/img/baijia/bj1005.svg\" style=\"width:100%;display:block;margin:12px 0;\" alt=\"封面\">\n      <p style=\"padding:12px 16px;line-height:1.9;color:#333;font-size:17px;margin:0;\">长时间伏案，颈椎与腰椎最先“抗议”。其实每隔一小时花三分钟拉伸，就能显著缓解僵硬。</p><p style=\"padding:12px 16px;line-height:1.9;color:#333;font-size:17px;margin:0;\">动作一：扩胸后仰，打开胸椎；动作二：坐姿体前屈，放松下背；动作三：颈部侧拉伸；动作四：站姿髋屈肌拉伸；动作五：踝泵促进循环。每个动作保持 20 秒，循序渐进。</p><p style=\"padding:12px 16px;line-height:1.9;color:#333;font-size:17px;margin:0;\">拉伸不是越痛越有效，感到轻微牵拉感即可。坚持两周，肩颈的“紧绷感”会明显减轻。</p>\n      <p style=\"padding:0 16px 26px;line-height:1.8;color:#999;font-size:13px;\">—— 本文为本地模拟数据，用于演示「乐开心」详情页图文渲染。</p>\n    </div>",
+  "1006": "\n    <div class=\"bk-detail\">\n      <img class=\"lazy-lozd\" src=\"/img/baijia/bj1006.svg\" style=\"width:100%;display:block;margin:12px 0;\" alt=\"封面\">\n      <p style=\"padding:12px 16px;line-height:1.9;color:#333;font-size:17px;margin:0;\">今年的院线片里，这部小成本作品是最被低估的一匹黑马。没有流量明星，没有宏大特效，镜头却牢牢钉在普通人身上。</p><p style=\"padding:12px 16px;line-height:1.9;color:#333;font-size:17px;margin:0;\">导演用近乎纪录片的质感，拍下了一对父子在时代缝隙里的拉扯。台词克制，情绪却绵密，散场后很久都走不出来。</p><p style=\"padding:12px 16px;line-height:1.9;color:#333;font-size:17px;margin:0;\">它提醒我们：好电影不靠声量取胜，而靠真诚。如果你厌倦了爆米花式的喧嚣，这部值得走进影院认真看一次。</p>\n      <p style=\"padding:0 16px 26px;line-height:1.8;color:#999;font-size:13px;\">—— 本文为本地模拟数据，用于演示「乐开心」详情页图文渲染。</p>\n    </div>"
+ },
+ "jokes": [
+  {
+   "title": "程序员去超市",
+   "img": "/img/jokes/jk01.svg",
+   "text": "程序员去超市买东西，老板问：要几个？程序员：先给我来一个，我再循环要剩下的。"
+  },
+  {
+   "title": "Bug 的哲学",
+   "img": "/img/jokes/jk02.svg",
+   "text": "世界上唯一不变的就是 Bug 永远改不完。"
+  },
+  {
+   "title": "面试",
+   "img": "/img/jokes/jk03.svg",
+   "text": "面试官：你会什么？我：我会让程序跑起来。面试官：可它现在跑不起来。我：所以我才来面试。"
+  },
+  {
+   "title": "时钟",
+   "img": "/img/jokes/jk04.svg",
+   "text": "秒针对分针说：你走一步我得走六十步，这就是职场。"
+  },
+  {
+   "title": "Wi-Fi",
+   "img": "/img/jokes/jk05.svg",
+   "text": "世界上最远的距离，是满格 Wi-Fi 却连不上。"
+  },
+  {
+   "title": "减肥",
+   "img": "/img/jokes/jk06.svg",
+   "text": "我减肥的方法很简单：把“明天开始”这四个字念了一年。"
+  },
+  {
+   "title": "开会",
+   "img": "/img/jokes/jk07.svg",
+   "text": "一个小时的会，前五十分钟在等人，后十分钟决定了下次会议的时间。"
+  },
+  {
+   "title": "猫",
+   "img": "/img/jokes/jk08.svg",
+   "text": "猫主子调试代码的方式：把你的键盘当床。"
+  },
+  {
+   "title": "咖啡",
+   "img": "/img/jokes/jk09.svg",
+   "text": "程序员的三大支柱：咖啡、代码、和“再试一次”。"
+  },
+  {
+   "title": "加班",
+   "img": "/img/jokes/jk10.svg",
+   "text": "加班不可怕，可怕的是加班后发现 Bug 是上午自己写的。"
+  }
+ ],
+ "about": "<!DOCTYPE html><html><head><meta charset=\"utf-8\">\n  <meta name=\"viewport\" content=\"width=device-width,initial-scale=1,user-scalable=no\">\n  <title>关于乐开心</title>\n  <style>\n    body{font-family:PingFang SC,Microsoft YaHei,sans-serif;margin:0;padding:40px 20px;color:#333;background:#fafafa;}\n    h1{font-size:24px;} .box{max-width:640px;margin:0 auto;background:#fff;padding:24px;border-radius:10px;box-shadow:0 2px 12px rgba(0,0,0,.06);}\n    code{background:#f0f0f0;padding:2px 6px;border-radius:4px;}\n  </style></head>\n  <body><div class=\"box\">\n    <h1>关于「乐开心」</h1>\n    <p>这是一个基于 DCloud MUI 开发的音乐笑话小应用。</p>\n    <p>当前由本地开发服务 <code>server.js</code> 提供<b>真实模拟数据</b>与静态托管：歌曲为本地合成可播放旋律，百家与笑话均带真实配图与正文，后端接口前缀为 <code>/app_backend/</code>。</p>\n    <p>原远程后端 <code>www.80shihua.com/app_backend</code> 已失效，本仓库已重构为可在本地浏览器直接运行。</p>\n  </div></body></html>"
 }

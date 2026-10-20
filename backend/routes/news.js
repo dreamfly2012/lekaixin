@@ -32,11 +32,17 @@ const DEFAULT_FEEDS = [
 ];
 
 /* ----------------------- RSS 解析（零依赖正则） ----------------------- */
+/*
+ * 实体解码 + CDATA 剥离。
+ * 注意：此处只允许存在一份实现——同名函数声明会被后定义者覆盖，
+ * 曾因重复定义导致 CDATA 剥离逻辑丢失，标题里残留 "<![CDATA[...]]>"。
+ */
 function decodeEntities(s) {
   return (s || '')
     .replace(/<!\[CDATA\[([\s\S]*?)\]\]>/g, '$1')
     .replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"')
     .replace(/&#0?39;/g, "'").replace(/&apos;/g, "'")
+    .replace(/&#x2F;/gi, '/')
     .replace(/&amp;/g, '&').replace(/&nbsp;/g, ' ');
 }
 function stripHtml(s) {
@@ -75,7 +81,21 @@ function pickContent(e) {
     e.match(/<description[^>]*>([\s\S]*?)<\/description>/i);
   return m ? decodeEntities(m[1]) : '';
 }
-function pickImage(e) {
+// 从任意 HTML 片段里取第一张图片（用于 feed 无 media:content 时，从正文/摘要里捞图）
+function pickImgFromHtml(html) {
+  if (!html) return '';
+  // 跳过占位/装饰图
+  const re = /<img[^>]*\bsrc=["']([^"']+)["'][^>]*>/gi;
+  let m;
+  while ((m = re.exec(html))) {
+    const u = m[1];
+    if (!u || BAD_IMG_RE.test(u.split('?')[0])) continue;
+    return u;
+  }
+  return '';
+}
+
+function pickImage(e, extraHtml) {
   let m = e.match(/<media:content[^>]*url="([^"]+)"/i) ||
     e.match(/<media:thumbnail[^>]*url="([^"]+)"/i);
   if (m) return decodeEntities(m[1]);
@@ -85,7 +105,8 @@ function pickImage(e) {
   if (m) return decodeEntities(m[1]);
   m = e.match(/<img[^>]*src="([^"]+)"/i);
   if (m) return decodeEntities(m[1]);
-  return '';
+  // 兜底：很多站点把配图放在 description / content 的 HTML 里
+  return pickImgFromHtml(extraHtml);
 }
 function parseFeed(xml, source) {
   const items = xml.match(/<item[\s\S]*?<\/item>/gi) ||
@@ -100,15 +121,18 @@ function parseFeed(xml, source) {
       pickText(it, 'content:encoded') ||
       pickText(it, 'content');
     if (summary.length > 140) summary = summary.slice(0, 140) + '…';
+    // 正文原始 HTML：既用于取配图，也用于详情页全文缓存
+    const rawContent = pickContent(it);
     out.push({
       ID: url,
       m_title: title,
-      m_image_url: pickImage(it),
+      // 配图：优先 feed 自带字段，其次从 description/content 的 HTML 里捞第一张图
+      m_image_url: pickImage(it, decodeEntities(rawContent)),
       m_summary: summary,
       m_url: url,
       m_source: source,
       m_published: pickDate(it),
-      m_content: pickContent(it)
+      m_content: rawContent
     });
   }
   return out;
@@ -256,14 +280,6 @@ function findContentInner(html) {
     if (bestLen > 2000) break;
   }
   return bestLen >= 60 ? best : null;
-}
-
-function decodeEntities(s) {
-  return (s || '')
-    .replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"')
-    .replace(/&#0?39;/g, "'").replace(/&apos;/g, "'")
-    .replace(/&#x2F;/gi, '/')
-    .replace(/&amp;/g, '&').replace(/&nbsp;/g, ' ');
 }
 
 function resolveUrl(u, base) {
@@ -435,6 +451,12 @@ async function lookupFromFeeds(url) {
 async function getNewsContent(req, res, query) {
   const url = query.url || '';
   if (!url) return sendJSON(res, { ok: false, reason: 'missing url' });
+  // 本地 mock 文章（mock://<ID>）：直接取预置正文，无需联网抓取
+  if (url.indexOf('mock://') === 0) {
+    const id = url.slice('mock://'.length);
+    const html = mock.getBaijiaContent(id);
+    return sendJSON(res, html ? { ok: true, html: html } : { ok: false, reason: 'mock article not found' });
+  }
   try {
     // 1. feed 全文缓存（列表加载时预热）
     let html = cacheGet(rssContentCache, url);

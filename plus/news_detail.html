@@ -3,55 +3,68 @@
 	<head>
 		<meta charset="UTF-8">
 		<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
 		<title>资讯详情</title>
 		<script src="../js/jquery.min.js"></script>
 		<script src="../js/mui.min.js"></script>
-		<script src="../js/common.js"></script>
 		<link href="../css/mui.min.css" rel="stylesheet"/>
+		<link href="../css/theme.css" rel="stylesheet"/>
+		<link href="../css/pages.css" rel="stylesheet"/>
 		<style>
-			body{background:#f5f5f5;}
-			.news-cover{width:100%;max-height:260px;object-fit:cover;display:block;background:#e9e9e9;}
-			.news-body{padding:16px;background:#fff;}
-			.news-title{font-size:20px;font-weight:700;line-height:1.4;margin:0 0 8px;color:#222;}
-			.news-meta{color:#595959;font-size:12px;margin-bottom:14px;}
-			.news-summary{font-size:15px;line-height:1.85;color:#333;white-space:pre-wrap;word-break:break-word;}
-			.news-link{margin-top:22px;}
-			.news-loading{color:#999;font-size:13px;text-align:center;padding:18px 0 4px;}
-			/* 原文正文排版 */
-			.news-article{font-size:16px;line-height:1.85;color:#333;word-break:break-word;}
-			.news-article p{margin:0 0 14px;}
-			.news-article img{max-width:100%;height:auto;display:block;margin:12px auto;border-radius:6px;}
-			.news-article h1,.news-article h2{font-size:18px;line-height:1.5;margin:20px 0 10px;color:#222;}
-			.news-article h3,.news-article h4,.news-article h5{font-size:16px;line-height:1.5;margin:16px 0 8px;color:#222;}
-			.news-article blockquote{margin:12px 0;padding:10px 14px;border-left:4px solid #d5d5d5;background:#fafafa;color:#555;border-radius:0 6px 6px 0;}
-			.news-article ul,.news-article ol{padding-left:22px;margin:0 0 14px;}
-			.news-article li{margin-bottom:6px;}
-			.news-article a{color:#1976d2;text-decoration:none;}
-			.news-article table{width:100%;border-collapse:collapse;font-size:14px;margin:12px 0;}
-			.news-article th,.news-article td{border:1px solid #e5e5e5;padding:6px 8px;text-align:left;}
-			.news-article pre{background:#f6f6f6;padding:10px;border-radius:6px;overflow-x:auto;font-size:13px;}
-			.news-article hr{border:none;border-top:1px solid #eee;margin:18px 0;}
+			/* 独立详情页：内容区撑满导航栏之下，自身滚动（阅读进度条基于它计算） */
+			#ndScroll {
+				position: fixed;
+				top: 44px; bottom: 0; left: 0; right: 0;
+				overflow-y: auto;
+				-webkit-overflow-scrolling: touch;
+			}
 		</style>
 		<script type="text/javascript" charset="UTF-8">
 			mui.init();
 		</script>
 	</head>
-	<body>
-		<header class="mui-bar mui-bar-nav">
+	<body class="lk-page">
+		<!-- 阅读进度条 -->
+		<div class="lk-progress"><i id="readBar"></i></div>
+
+		<header class="mui-bar mui-bar-nav lk-nav">
 			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left" id="backBtn"></a>
 			<h1 class="mui-title">资讯</h1>
 		</header>
-		<div class="mui-content" style="padding-top:44px;">
-			<img id="cover" class="news-cover" style="display:none;">
-			<div class="news-body">
-				<h1 class="news-title" id="title"></h1>
-				<div class="news-meta" id="meta"></div>
-				<div class="news-summary" id="summary"></div>
-				<div id="loading" class="news-loading" style="display:none;">正在加载全文…</div>
-				<div id="article" class="news-article" style="display:none;"></div>
-				<a id="origin" class="mui-btn mui-btn-block mui-btn-primary news-link" style="display:none;">阅读原文 ↗</a>
+
+		<div id="ndScroll">
+			<div class="lk-nd-cover" id="coverWrap" style="display:none;">
+				<img id="cover" alt="" referrerpolicy="no-referrer" onload="this.parentNode.style.display='block'" onerror="this.parentNode.style.display='none'">
+			</div>
+
+			<div class="lk-nd-head">
+				<h1 class="lk-nd-title" id="title"></h1>
+				<div class="lk-nd-meta" id="meta"></div>
+			</div>
+
+			<div class="lk-nd-body">
+				<div class="lk-nd-summary" id="summaryBox">
+					<b>摘要</b>
+					<div id="summary"></div>
+				</div>
+				<div id="loading" class="lk-nd-loading" style="display:none;">
+					<span class="lk-nd-spinner"></span>
+					<span>正在加载全文…</span>
+				</div>
+				<div id="article" class="lk-article" style="display:none;"></div>
+			</div>
+
+			<div class="lk-nd-foot">
+				<a id="origin" class="lk-nd-origin" href="#" target="_blank" rel="noopener" style="display:none;">
+					<svg viewBox="0 0 24 24"><path d="M14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7zM5 5h5V3H3v18h18v-7h-2v5H5V5z"/></svg>
+					阅读原文
+				</a>
+				<p class="lk-nd-tip" id="footTip">内容来自公开 RSS 源，版权归原作者所有</p>
 			</div>
 		</div>
+
+		<div class="lk-toast" id="toast"></div>
+
 		<script>
 			var access_host = (window.LK_API_HOST || (location.protocol + '//' + location.host)) + '/app_backend/';
 
@@ -59,6 +72,13 @@
 				var reg = new RegExp('(^|&)'+name+'=([^&]*)(&|$)');
 				var r = location.search.substr(1).match(reg);
 				return r ? decodeURIComponent(r[2]) : '';
+			}
+
+			function showToast(msg){
+				var $t = $('#toast');
+				$t.text(msg).addClass('show');
+				clearTimeout(showToast._t);
+				showToast._t = setTimeout(function(){ $t.removeClass('show'); }, 1800);
 			}
 
 			// RSS 时间 -> "MM-DD HH:mm"，失败返回空串
@@ -70,6 +90,60 @@
 				return p(d.getMonth()+1) + '-' + p(d.getDate()) + ' ' + p(d.getHours()) + ':' + p(d.getMinutes());
 			}
 
+			function escapeHtml(s){
+				return String(s == null ? '' : s)
+					.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+					.replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+			}
+
+			/*
+			 * 清洗远端抓取的正文 HTML：
+			 *  1. 去掉 script/iframe/style 等危险标签及其内容
+			 *  2. 去掉内联 color/background 样式（深色底上原本的 #333 会不可读）
+			 *  3. 外链补 target/rel，避免跳出 App
+			 */
+			function sanitizeArticle(html){
+				var $tmp = $('<div></div>').html(html || '');
+				$tmp.find('script, iframe, style, object, embed, form, ins').remove();
+				$tmp.find('*').each(function(){
+					var el = this;
+					var st = el.getAttribute('style') || '';
+					if (st) {
+						st = st.replace(/(^|;)\s*(color|background(-color)?|font-color)\s*:[^;]*/gi, '');
+						if (st.replace(/[;\s]/g, '')) el.setAttribute('style', st);
+						else el.removeAttribute('style');
+					}
+					if (el.tagName === 'A' && el.getAttribute('href')) {
+						el.setAttribute('target', '_blank');
+						el.setAttribute('rel', 'noopener noreferrer');
+					}
+					// 正文配图同样走代理：IT之家 / 极客公园 直链会 403
+					if (el.tagName === 'IMG') {
+						var src = el.getAttribute('src') || '';
+						if (/^https?:\/\//i.test(src)) {
+							el.setAttribute('src', access_host + 'getimage.php?url=' + encodeURIComponent(src));
+							el.setAttribute('referrerpolicy', 'no-referrer');
+							el.setAttribute('loading', 'lazy');
+						}
+					}
+				});
+				return $tmp.html();
+			}
+
+			// 读取详情数据：浏览器走 sessionStorage，5+ 走 plus.storage，
+			// URL 参数作为最终兜底（摘要含特殊字符时 URL 传参易被截断）
+			function readDetail(key){
+				var raw = null;
+				try { raw = sessionStorage.getItem(key); } catch (e) { /* 忽略 */ }
+				if (!raw) {
+					try {
+						if (window.plus && plus.storage) raw = plus.storage.getItem(key);
+					} catch (e) { /* 忽略 */ }
+				}
+				if (!raw) return null;
+				try { return JSON.parse(raw); } catch (e) { return null; }
+			}
+
 			var title = getQuery('title') || '资讯';
 			var img = getQuery('img') || '';
 			var summary = getQuery('summary') || '';
@@ -77,18 +151,52 @@
 			var time = getQuery('time') || '';
 			var url = getQuery('url') || '';
 
+			var nid = getQuery('nid');
+			if (nid) {
+				var n = readDetail('lk_news_' + nid);
+				if (n) {
+					title = n.title || title;
+					img = n.img || img;
+					summary = n.summary || summary;
+					source = n.source || source;
+					time = n.time || time;
+					url = n.url || url;
+				}
+			}
+
 			document.title = title;
 			$('.mui-title').text('资讯');
 			$('#title').text(title);
-			$('#summary').text(summary);
-			if (source || time) {
-				$('#meta').text([source, formatTime(time)].filter(function(v){return !!v;}).join(' · '));
+			if (summary) {
+				$('#summary').text(summary);
+			} else {
+				$('#summaryBox').hide();
 			}
+
+			// 元信息行：来源（色块 + 文字双编码）+ 时间
+			// 色块颜色与列表页按来源分配，保持同源同色
+			var SOURCE_COLORS = ['#ff5c7a', '#7c5cff', '#12b5a5', '#4aa8ff', '#ffc53d'];
+			function sourceColor(name){
+				var k = String(name || '');
+				var sum = 0;
+				for (var i = 0; i < k.length; i++) sum = (sum * 31 + k.charCodeAt(i)) >>> 0;
+				return SOURCE_COLORS[sum % SOURCE_COLORS.length];
+			}
+			var metaHtml = '';
+			if (source) {
+				metaHtml += '<span class="lk-source"><i style="background:' + sourceColor(source) + '"></i>' + escapeHtml(source) + '</span>';
+			}
+			var ft = formatTime(time);
+			if (ft) metaHtml += '<span>' + escapeHtml(ft) + '</span>';
+			if (metaHtml) $('#meta').html(metaHtml);
+
 			if (img) {
-				$('#cover').attr('src', img).show().on('error', function(){ $(this).hide(); });
-			}
-			if (url) {
-				$('#origin').attr('href', url).show();
+				// 部分站点（IT之家等）有防盗链，必须走后端代理（由后端带 Referer 抓取）
+				var proxied = /^https?:\/\//i.test(img)
+					? access_host + 'getimage.php?url=' + encodeURIComponent(img)
+					: img;
+				$('#cover').attr('src', proxied);
+				$('#coverWrap').show();
 			}
 
 			// 抓取原文全文，成功后替换摘要；失败保留摘要 + 阅读原文
@@ -101,8 +209,8 @@
 					timeout: 15000
 				}).done(function(r){
 					if (r && r.ok && r.html) {
-						$('#summary').hide();
-						$('#article').html(r.html).show();
+						$('#summaryBox').hide();
+						$('#article').html(sanitizeArticle(r.html)).show();
 					}
 				}).fail(function(){
 					// 网络异常：静默保留摘要
@@ -111,10 +219,46 @@
 				});
 			}
 
+			// 原文链接：mock:// 开头的本地文章没有外链，隐藏按钮
+			var isMock = url.indexOf('mock://') === 0;
+			if (url && !isMock) {
+				$('#origin').attr('href', url).show();
+			} else if (isMock) {
+				$('#footTip').text('本文为本地演示内容');
+			}
+
 			// 浏览器环境：mui-action-back 不生效，改为 history.back
-			$('#backBtn').on('click', function(){
+			// 同时监听 tap：移动端 MUI 手势层会吃掉 click
+			var lkBackTap = 0;
+			function lkBackHandler(){
+				var now = Date.now();
+				if (now - lkBackTap < 400) return;
+				lkBackTap = now;
 				if (!(mui.os && mui.os.plus)) { history.back(); }
-			});
+			}
+			$('#backBtn').on('click', lkBackHandler);
+			$('#backBtn').on('tap', lkBackHandler);
+
+			// 真机 5+：接管 Android 硬件返回键，关闭当前 webview
+			if (mui.os && mui.os.plus) {
+				mui.plusReady(function(){
+					plus.key.addEventListener('backbutton', function(){
+						var self = plus.webview.currentWebview();
+						if (self && self.opener()) { self.close(); }
+						else { plus.runtime.quit(); }
+					}, false);
+				});
+			}
+
+			// 阅读进度条
+			var scrollEl = document.getElementById('ndScroll');
+			function updateProgress(){
+				var h = scrollEl.scrollHeight - scrollEl.clientHeight;
+				var p = h > 0 ? (scrollEl.scrollTop / h) : 0;
+				$('#readBar').css('width', Math.min(100, Math.max(0, p * 100)) + '%');
+			}
+			scrollEl.addEventListener('scroll', updateProgress, { passive: true });
+			updateProgress();
 		</script>
 	</body>
 </html>

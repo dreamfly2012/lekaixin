@@ -10,6 +10,37 @@
 - 页面 `access_host` 改为同源本地接口（支持 `window.LK_API_HOST` 覆盖，APK 打包时注入远程后端地址）；素材 URL 统一使用根绝对路径（带前导 `/`），子页面兼容浏览器（URL query 传参）与原生 5+ 真机环境。
 - 修复首屏笑话列表 `juicer` 调用导致空白的 bug；修复首页百家图片仍指向失效域名的问题。
 
+### 界面重构（深色设计系统）
+
+全站统一为深色沉浸式视觉，样式与结构按「设计令牌 + 通用组件 + 页面级样式」三层组织：
+
+| 文件 | 职责 |
+| --- | --- |
+| `css/theme.css` | 全局设计系统：CSS 变量令牌（`--lk-*`）、深色应用外壳（毛玻璃导航栏 / 底部 Tab 栏 + 珊瑚渐变激活指示条）、通用组件（卡片 / 标签 / 按钮 / 骨架屏 / 空状态 / Toast / 详情页排版 / 阅读进度条） |
+| `css/pages.css` | 页面级样式：笑话双列卡片网格、新闻头条大卡 + 列表流、关于页卡片与功能矩阵、笑话详情大图 + 引言块、新闻详情封面 + 摘要框 |
+| `css/music.css` | 播放器专用样式（唱片封面 / 进度条 / 歌词区） |
+
+五个页面同步重做：**笑话列表**（Hero 统计 + 双列网格 + 换一批）、**笑话详情**（大图 Hero + 引言块 + 复制 / 换一条）、**新闻列表**（头条大卡 + 列表流 + 来源徽章）、**新闻详情**（封面 + 阅读进度条 + 全文清洗渲染）、**关于页**（由 iframe 改为原生页面：品牌卡 / 功能矩阵 / 数据来源）。
+
+设计约定：
+- **色弱友好双编码**：来源用「色块 + 文字标签」，状态用「颜色 + 位置」，不依赖红绿色相区分。
+- **远端配图走代理**：IT之家 / 极客公园 等站点对直链访问返回 403，`backend/routes/image.js` 按域名自动携带来源站 `Referer` 抓取后回传，前端统一请求 `getimage.php?url=...`。
+
+### 关键实现约定（改动时务必留意）
+
+1. **移动端点击必须监听 `tap`**
+   MUI 的 `pullRefresh` 会在 `touchstart` 阶段调用 `preventDefault()`，浏览器因此**不再合成 `click` 事件**——只绑 `click` 的元素在真机上「点了没反应」。
+   所有可点击元素统一走 `index.html` 里的 `bindTap(selector, handler)`（同时监听 `click` 与 MUI 的 `tap`，400ms 时间窗去重），详情页的按钮同理手动绑了 `click` + `tap`。
+
+2. **详情数据用存储传递，不用长 URL**
+   中文经 `encodeURIComponent` 后膨胀约 3 倍，正文塞进 query 会被真机 WebView 截断。
+   - 浏览器：`sessionStorage`
+   - 5+ 真机：`plus.storage`（跨 webview 共享，sessionStorage 可能被隔离）
+   - 详情页读取顺序为「存储 → URL 参数」兜底；5+ 下 `gotoDetail()` 只把短字段（`url`）留在 query，正文等长文本走存储。
+
+3. **`backend/routes/news.js` 中 `decodeEntities` 只允许存在一份实现**
+   同名函数声明会被后定义者覆盖——曾因重复定义导致 CDATA 剥离逻辑丢失，新闻标题里残留 `<![CDATA[...]]>`。
+
 ### 重新生成模拟数据 / 素材
 
 ```bash
@@ -23,8 +54,6 @@ python tools/gen_assets.py      # 生成 audio/song_*.wav、img/{covers,baijia,j
 ```bash
 # 需要 Node.js（>=18，已内置 fetch；推荐用 managed node）
 node server.js
-# 或用 managed node：
-# ~/.workbuddy/binaries/node/versions/22.22.2-6/node.exe server.js
 ```
 
 启动后访问：**http://localhost:8080**

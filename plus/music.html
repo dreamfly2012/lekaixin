@@ -11,31 +11,41 @@
     <script type="text/javascript" src="../js/AudioPlayer.js"></script>
     <link href="../css/mui.min.css" rel="stylesheet"/>
     <link href="../css/music.css" rel="stylesheet"/>
+    <link href="../css/theme.css" rel="stylesheet"/>
+    <link href="../css/pages.css" rel="stylesheet"/>
     <script type="text/javascript" charset="UTF-8">
       	mui.init();
     </script>
 </head>
-<body>
-	<header class="mui-bar mui-bar-nav">
+<body class="lk-music-page">
+	<header class="mui-bar mui-bar-nav lk-nav">
 		<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
 		<h1 class="mui-title">电台</h1>
 	</header>
 
-	<nav class="mui-bar mui-bar-tab">
+	<nav class="mui-bar mui-bar-tab lk-tabbar">
 		<a class="mui-tab-item" href="../index.html#tabbar">
-			<span class="mui-icon mui-icon-home"></span>
+			<span class="mui-icon">
+				<svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm-3.5 9a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3zm7 0a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3zM12 11.5c2.5 0 4.5 1.2 4.5 2.6 0 .9-.8 1.4-1.6 1.4-.7 0-1.1-.4-1.6-.4-.4 0-.6.2-.8.2s-.4-.2-.8-.2c-.5 0-1.6.4-1.6.4-.8 0-1.6-.5-1.6-1.4 0-1.4 2-2.6 4.5-2.6z"/></svg>
+			</span>
 			<span class="mui-tab-label">笑话</span>
 		</a>
 		<a class="mui-tab-item mui-active" href="../index.html#tabbar-with-radio">
-			<span class="mui-icon mui-icon-email"></span>
+			<span class="mui-icon">
+				<svg viewBox="0 0 24 24"><path d="M12 3v10.55A4 4 0 1 0 14 17V7h4V3h-6z"/></svg>
+			</span>
 			<span class="mui-tab-label">电台</span>
 		</a>
 		<a class="mui-tab-item" href="../index.html#tabbar-with-baijia">
-			<span class="mui-icon mui-icon-contact"></span>
-			<span class="mui-tab-label">百家</span>
+			<span class="mui-icon">
+				<svg viewBox="0 0 24 24"><path d="M4 4h16a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1zm2 4v2h12V8H6zm0 4v2h12v-2H6zm0 4v2h8v-2H6z"/></svg>
+			</span>
+			<span class="mui-tab-label">新闻</span>
 		</a>
 		<a class="mui-tab-item" href="../index.html#tabbar-with-about">
-			<span class="mui-icon mui-icon-gear"></span>
+			<span class="mui-icon">
+				<svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm1 15h-2v-2h2v2zm1.8-6.4-.9.9c-.7.7-.9 1.1-.9 2.5h-2v-.5c0-1.1.4-1.8 1.1-2.5l1.2-1.2c.4-.3.6-.8.6-1.2 0-1-.8-1.7-1.8-1.7s-1.8.7-1.9 1.7H8c0-2 1.8-3.6 4-3.6s3.9 1.5 3.9 3.5c0 .9-.3 1.6-.9 2.1z"/></svg>
+			</span>
 			<span class="mui-tab-label">关于</span>
 		</a>
 	</nav>
@@ -72,12 +82,12 @@
         pattern = /\[\d{2}:\d{2}.\d{2}\]/g,
         //保存最终结果的数组
         result = [];
-	    //去掉不含时间的行
-	    while (!pattern.test(lines[0])) {
+	    //去掉不含时间的行（带 length 保护，避免空歌词死循环）
+	    while (lines.length && !pattern.test(lines[0])) {
 	        lines = lines.slice(1);
 	    };
     	//上面用'\n'生成生成数组时，结果中最后一个为空元素，这里将去掉
-    	lines[lines.length - 1].length === 0 && lines.pop();
+    	lines.length && lines[lines.length - 1].length === 0 && lines.pop();
     	lines.forEach(function(v /*数组元素值*/ , i /*元素索引*/ , a /*数组本身*/ ) {
 	        //提取出时间[xx:xx.xx]
 	        var time = v.match(pattern),
@@ -101,48 +111,49 @@
 	    return result;
 	}
 
-	function get_lrc(song){
-		//console.log(song);
-		$.ajax({
-			type:"get",
-			url:access_host+'getlrc.php?song='+song,//当你孤单你会想起谁
-			dataType : 'json',
-			async:true,
-			success:function(result){
-				var lrc = result.lrc;
-		        $.ajax({
-		        	type:"get",
-					url:access_host+'getlrc_content.php?url='+lrc,
-					dataType : 'html',
-					async:true,
-					success:function(result){
-						lyric = parseLyric(result);
-						//console.log(lyric);
-						var lyricContainer = $('.music_lrc')[0];
-						fragment = document.createDocumentFragment();
-					    lyric.forEach(function(v, i, a) {
-					        var line = document.createElement('li');
-					        line.id = 'line-' + i;
-					        line.textContent = v[1];
-					        fragment.appendChild(line);
-					    });
-					    lyricContainer.appendChild(fragment);
-					    //获取页面上的audio标签
-						$('audio').bind("timeupdate", function(e) {
-					        //遍历所有歌词，看哪句歌词的时间与当然时间吻合
-						    for (var i = 0, l = lyric.length; i < l; i++) {
-						    	if (this.currentTime> lyric[i][0]) {
-						            //显示到页面
-						            $('#line-'+i).css('color','yellow').siblings().css('color','white');
-						            $('.music_lrc').css('margin-top','-'+21*i+'px');
-						        };
-						    };
-					    });
-					}
-		        });
-			}
-		});
-	}
+// 歌词请求令牌：切歌后旧请求的回调直接丢弃，避免歌词错插
+var lrcToken = 0;
+function get_lrc(song, token){
+	//console.log(song);
+	$.ajax({
+		type:"get",
+		url:access_host+'getlrc.php?song='+song,//当你孤单你会想起谁
+		dataType : 'json',
+		async:true,
+		success:function(result){
+			var lrc = result.lrc;
+	        $.ajax({
+	        	type:"get",
+				url:access_host+'getlrc_content.php?url='+lrc,
+				dataType : 'html',
+				async:true,
+				success:function(result){
+					if (token !== lrcToken) return; // 已切歌，丢弃
+					lyric = parseLyric(result);
+					// 歌词数据交给播放器引擎同步（AudioPlayer.js 提供的 LK_LYRIC_SYNC），
+					// 进度条刷新由其内部 rAF/timeupdate 驱动，互不干扰
+					window.LK_LYRIC = lyric;
+					var $ul = $('.music_lrc');
+					if (!$ul.length) return;
+					$ul.empty();
+					var fragment = document.createDocumentFragment();
+				    lyric.forEach(function(v, i, a) {
+				        var line = document.createElement('li');
+				        line.id = 'line-' + i;
+				        line.textContent = v[1];
+				        fragment.appendChild(line);
+				    });
+				    $ul[0].appendChild(fragment);
+				    if (window.LK_LYRIC_RESET) window.LK_LYRIC_RESET();
+				    if (window.LK_LYRIC_SYNC) {
+				        var audio = $('#myAudio audio')[0];
+				        window.LK_LYRIC_SYNC(audio ? audio.currentTime : 0);
+				    }
+				}
+	        });
+		}
+	});
+}
 
 	function getQuery(name){
 		var reg = new RegExp('(^|&)'+name+'=([^&]*)(&|$)');
@@ -164,48 +175,65 @@
 				var tpl = document.getElementById('tpl').innerHTML;
 				var music_content = juicer(tpl, data);
 				$("#content").html(music_content);
-				$("#myAudio").initAudio();
+			$("#myAudio").initAudio();
 
-				if (result.song && result.song.length) {
-					get_lrc(result.song[0]['title']);
-				}
+			if (result.song && result.song.length) {
+				get_lrc(result.song[0]['title'], ++lrcToken);
+			}
 			}
 		});
 	}
 
-	/* 切歌同步歌词（增强真实感：每首歌有各自的歌词） */
-	function currentSongTitle(){
-		var idx = $('.music_list li.active').index();
-		if (idx < 0) idx = 0;
-		return $('#myAudio source').eq(idx).attr('title') || '';
+/* 切歌同步歌词（增强真实感：每首歌有各自的歌词） */
+function currentSongTitle(){
+	// 优先走播放器 API：返回纯歌名（与歌词检索 key 一致）
+	var audio = $('#myAudio audio')[0];
+	if (audio && audio.lkPlayer) return audio.lkPlayer.titleAt(audio.lkPlayer.index());
+	var idx = $('.music_list li.active').index();
+	if (idx < 0) idx = 0;
+	return $('#myAudio source').eq(idx).attr('title') || '';
+}
+function reloadLyricForCurrent(){
+	var t = currentSongTitle();
+	if (t) { $('.music_lrc').empty(); get_lrc(t, ++lrcToken); }
+}
+$(function(){
+	// 切歌事件由 AudioPlayer 统一派发（含自动接歌），这里只负责刷新歌词
+	$(document).on('lk:songchange', function(){
+		reloadLyricForCurrent();
+	});
+	// 点击歌单直接切歌并加载歌词（走播放器 API，保证索引/封面/进度同步）
+	// 同时监听 tap：MUI 的 pullRefresh / 手势层会吃掉 click，tap 才是移动端可靠信号
+	var lkLastSongTap = 0;
+	function lkSongTapHandler(){
+		var now = Date.now();
+		if (now - lkLastSongTap < 400) return;
+		lkLastSongTap = now;
+		var audio = $('#myAudio audio')[0];
+		if (audio && audio.lkPlayer) audio.lkPlayer.playIndex($(this).index());
 	}
-	function reloadLyricForCurrent(){
-		var t = currentSongTitle();
-		if (t) { $('.music_lrc').empty(); get_lrc(t); }
-	}
-	$(function(){
-		// 点击上一首/下一首后同步歌词
-		$(document).on('click', '.btn_next, .btn_previous', function(){
-			setTimeout(reloadLyricForCurrent, 60);
-		});
-		// 点击歌单直接切歌并加载歌词
-		$(document).on('click', '.music_list li', function(){
-			var idx = $(this).index();
-			var $srcs = $('#myAudio source');
-			if (idx < 0 || idx >= $srcs.length) return;
-			var audio = $('#myAudio audio')[0];
-			if (!audio) return;
-			audio.src = $srcs.eq(idx).prop('src');
-			audio.play();
-			reloadLyricForCurrent();
-		});
-		// 底部 tab 栏：跨页导航回首页对应 tab（用捕获阶段拦截，绕过 mui 的 preventDefault 拦截）
+	$(document).on('click', '.music_list li', lkSongTapHandler);
+	$(document).on('tap', '.music_list li', lkSongTapHandler);
+		// 底部 tab 栏：跨页导航回首页对应 tab
+		// 用捕获阶段拦截 click + 监听 tap，兼容移动端（MUI 手势层会吃掉 click）
+		var lkTabNav = 0;
+		function lkGoTab(a){
+			var now = Date.now();
+			if (now - lkTabNav < 400) return;
+			lkTabNav = now;
+			location.href = a.getAttribute('href');
+		}
 		document.addEventListener('click', function(e){
 			var a = e.target.closest ? e.target.closest('.mui-bar-tab a') : null;
 			if (!a) return;
 			e.preventDefault();
 			e.stopPropagation();
-			location.href = a.getAttribute('href');
+			lkGoTab(a);
+		}, true);
+		document.addEventListener('tap', function(e){
+			var a = e.target.closest ? e.target.closest('.mui-bar-tab a') : null;
+			if (!a) return;
+			lkGoTab(a);
 		}, true);
 	});
 

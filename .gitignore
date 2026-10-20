@@ -71,3 +71,9 @@ public/uploads/
 # 运行时配置文件（含环境变量、数据库连接等）
 *.local
 !/*.example
+
+
+
+# AI helper
+CLAUDE.md
+CODEX.md

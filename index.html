@@ -11,152 +11,230 @@
 		<!--App自定义的css-->
 		<link rel="stylesheet" type="text/css" href="css/app.css"/>
 		<link href="css/music.css" rel="stylesheet"/>
+		<!-- 全局设计系统 + 页面样式 -->
+		<link href="css/theme.css" rel="stylesheet"/>
+		<link href="css/pages.css" rel="stylesheet"/>
 		<script src="js/jquery.min.js"></script>
 		<script src="js/mui.min.js"></script>
 		<script src="js/juicer-min.js"></script>
 		<script src="js/AudioPlayer.js"></script>
 		<style>
-			#radio-player-view { position: relative; padding-bottom: 10px; }
-			#radio-player-view #myAudio { position: relative; height: 60vh; min-height: 420px; }
-			#music_list_box { max-height: 220px; overflow-y: auto; margin: 0 0 8px; }
-			#music_list_box li { list-style:none; padding:8px 16px; color:#fff; background:rgba(20,20,20,0.6); border-bottom:1px solid #333; cursor:pointer; }
-			#radio-back-list { color:#fff; border:1px solid #555; background:rgba(0,0,0,0.4); }
+			/* 电台播放器视图：撑满导航栏与底部 Tab 之间的可用区域 */
+			#radio-player-view { height: calc(100vh - 94px); }
+			#radio-player-view #myAudio { position: relative; height: 100%; }
 		</style>
 	</head>
 
-	<body>
-		<header class="mui-bar mui-bar-nav">
-			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
-			<h1 class="mui-title">笑话</h1>
+	<body class="lk-app">
+		<header class="mui-bar mui-bar-nav lk-nav">
+			<div class="lk-brand">
+				<span class="lk-logo">
+					<svg viewBox="0 0 24 24"><path d="M12 3v10.55A4 4 0 1 0 14 17V7h4V3h-6z"/></svg>
+				</span>
+				<span class="lk-brand-name">乐开心</span>
+			</div>
+			<h1 class="mui-title" id="navTitle">笑话</h1>
 		</header>
-		<nav class="mui-bar mui-bar-tab">
+		<nav class="mui-bar mui-bar-tab lk-tabbar">
 			<a class="mui-tab-item mui-active" href="#tabbar">
-				<span class="mui-icon mui-icon-home"></span>
+				<span class="mui-icon">
+					<svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm0 18a8 8 0 1 1 0-16 8 8 0 0 1 0 16zm-3.5-9a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zm7 0a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zM12 11.5c2.5 0 4.5 1.2 4.5 2.6 0 .9-.8 1.4-1.6 1.4-.7 0-1.1-.4-1.6-.4-.4 0-.6.2-.8.2s-.4-.2-.8-.2c-.5 0-1.6.4-1.6.4-.8 0-1.6-.5-1.6-1.4 0-1.4 2-2.6 4.5-2.6z"/></svg>
+				</span>
 				<span class="mui-tab-label">笑话</span>
 			</a>
 			<a class="mui-tab-item" href="#tabbar-with-radio">
-				<span class="mui-icon mui-icon-email"></span>
+				<span class="mui-icon">
+					<svg viewBox="0 0 24 24"><path d="M12 3v10.55A4 4 0 1 0 14 17V7h4V3h-6z"/></svg>
+				</span>
 				<span class="mui-tab-label">电台</span>
 			</a>
 			<a class="mui-tab-item" href="#tabbar-with-baijia">
-				<span class="mui-icon mui-icon-contact"></span>
+				<span class="mui-icon">
+					<svg viewBox="0 0 24 24"><path d="M4 4h16a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1zm2 4v2h12V8H6zm0 4v2h12v-2H6zm0 4v2h8v-2H6z"/></svg>
+				</span>
 				<span class="mui-tab-label">新闻</span>
 			</a>
 			<a class="mui-tab-item" href="#tabbar-with-about">
-				<span class="mui-icon mui-icon-gear"></span>
+				<span class="mui-icon">
+					<svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm1 15h-2v-2h2v2zm1.8-6.4-.9.9c-.7.7-.9 1.1-.9 2.5h-2v-.5c0-1.1.4-1.8 1.1-2.5l1.2-1.2c.4-.3.6-.8.6-1.2 0-1-.8-1.7-1.8-1.7s-1.8.7-1.9 1.7H8c0-2 1.8-3.6 4-3.6s3.9 1.5 3.9 3.5c0 .9-.3 1.6-.9 2.1z"/></svg>
+				</span>
 				<span class="mui-tab-label">关于</span>
 			</a>
 		</nav>
-		<div class="mui-content">
+		<div class="mui-content lk-content">
 			<div id="tabbar" data-page="2" class="mui-control-content mui-active">
-				<ul class="mui-table-view">
-					<script id="tpl" type="text/template">
-					    {@each joke as it,index}
-					    <li class="mui-table-view-cell jump_joke_detail" data-title="${it.title}" data-img="${it.img}" data-text="${it.text}">
-							<h4>
-								${it.title}
-							</h4>
-							<span><img src="${it.img}" /></span>
-						</li>
-						{@/each}
-					</script>
-				</ul>
+				<div class="lk-scroll">
+					<div class="lk-hero">
+						<h2 class="lk-hero-title">今日份快乐</h2>
+						<p class="lk-hero-desc">打开看看，能不能博你一笑。</p>
+						<div class="lk-hero-stats">
+							<div class="lk-hero-stat"><b id="jokeCount">0</b><span>条段子</span></div>
+							<div class="lk-hero-stat"><b id="jokeImgCount">0</b><span>张配图</span></div>
+						</div>
+					</div>
+					<div class="lk-sec">
+						<div class="lk-sec-title">最新段子</div>
+						<button class="lk-icon-btn" id="jokeRefresh" title="换一批">
+							<svg viewBox="0 0 24 24"><path d="M17.65 6.35A7.96 7.96 0 0 0 12 4a8 8 0 1 0 7.73 10h-2.08A6 6 0 1 1 12 6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg>
+						</button>
+					</div>
+					<div class="lk-joke-grid" id="jokeGrid"></div>
+					<div id="jokeEmpty" class="lk-empty" style="display:none;">
+						<div class="lk-empty-ico">
+							<svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm0 18a8 8 0 1 1 0-16 8 8 0 0 1 0 16zm-3.5-9a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zm7 0a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3z"/></svg>
+						</div>
+						<div class="lk-empty-title">暂时没有段子</div>
+						<div class="lk-empty-desc">下拉刷新试试，或检查网络连接</div>
+					</div>
+				</div>
 			</div>
 
 			<div id="tabbar-with-radio" class="mui-control-content">
 				<!-- 频道列表视图 -->
 				<div id="radio-list-view">
-					<ul class="mui-table-view mui-table-view-chevron">
-						<script id="music_tpl" type="text/template">
-							{@each channel as it,index}
-								<li class="mui-table-view-cell"><a href="javascript:;" class="mui-navigate-right jump_music_detail" data-channelid="${it.channel_id}">${it.name}</a></li>
-							{@/each}
-						</script>
-					</ul>
+					<ul class="lk-channels" id="lk-channels"></ul>
 				</div>
-				<!-- 播放器视图（默认隐藏，点频道后在电台 tab 内切换显示） -->
+				<!-- 播放器视图（默认隐藏，点频道后在电台 tab 内切换显示；UI 由 AudioPlayer.js 生成） -->
 				<div id="radio-player-view" style="display:none;">
-					<div id="myAudio" style="margin:0 auto;"><audio preload="metadata"></audio></div>
-					<div class="music_list" id="music_list_box"></div>
-					<button id="radio-back-list" class="mui-btn mui-btn-block">返回频道列表</button>
+					<div id="myAudio"><audio preload="metadata"></audio></div>
 				</div>
 			</div>
 
 			<div id="tabbar-with-baijia" class="mui-control-content">
-				<ul class="mui-table-view">
-					<script id="baijia_tpl" type="text/template">
-					{@each baijia as it,index}
-					<li class="mui-table-view-cell mui-media">
-						<a href="javascript:;" class="jump_baijia_detail" data-bjaid="${it.ID}">
-							{@if it.m_image_url}
-							<img class="mui-media-object mui-pull-left" src="${it.m_image_url}" onerror="this.style.visibility='hidden'">
-							{@/if}
-							<div class="mui-media-body">
-								${it.m_title}
-								<p class='mui-ellipsis'>${it.m_summary}</p>
-								{@if it.m_source}<p class='mui-ellipsis' style="color:#999;font-size:12px;">${it.m_source}</p>{@/if}
-							</div>
-						</a>
-					</li>
-					{@/each}
-					</script>
-				</ul>
+				<div class="lk-scroll">
+					<div class="lk-hero lk-hero-violet">
+						<h2 class="lk-hero-title">科技与生活</h2>
+						<p class="lk-hero-desc">聚合爱范儿、极客公园、IT之家、少数派，每条都值得一读。</p>
+						<div class="lk-hero-stats">
+							<div class="lk-hero-stat"><b id="newsCount">0</b><span>条资讯</span></div>
+							<div class="lk-hero-stat"><b id="newsSourceCount">0</b><span>个来源</span></div>
+						</div>
+					</div>
+					<div class="lk-sec">
+						<div class="lk-sec-title">今日要闻</div>
+						<div class="lk-sec-sub" id="newsSub">加载中…</div>
+					</div>
+					<div id="newsLead"></div>
+					<div class="lk-news-list" id="newsList"></div>
+					<div id="newsEmpty" class="lk-empty" style="display:none;">
+						<div class="lk-empty-ico">
+							<svg viewBox="0 0 24 24"><path d="M4 4h16a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1zm2 4v2h12V8H6zm0 4v2h12v-2H6zm0 4v2h8v-2H6z"/></svg>
+						</div>
+						<div class="lk-empty-title">暂时没有资讯</div>
+						<div class="lk-empty-desc">检查网络后重新进入新闻页</div>
+					</div>
+				</div>
 			</div>
 
 			<div id="tabbar-with-about" class="mui-control-content">
-				<iframe id="about-frame" src="" style="width: 100%;min-height: 600px;overflow: hidden;"></iframe>
+				<div class="lk-scroll lk-about">
+					<div class="lk-about-card" style="text-align:center;">
+						<div class="lk-about-logo">
+							<svg viewBox="0 0 24 24"><path d="M12 3v10.55A4 4 0 1 0 14 17V7h4V3h-6z"/></svg>
+						</div>
+						<h2 class="lk-about-name">乐开心</h2>
+						<p class="lk-about-ver">版本 1.0.0 · 让每一天都有点乐子</p>
+						<div class="lk-about-tags">
+							<span class="lk-chip lk-chip-grad">笑话</span>
+							<span class="lk-chip lk-chip-violet">电台</span>
+							<span class="lk-chip lk-chip-teal">资讯</span>
+						</div>
+					</div>
+
+					<div class="lk-about-card">
+						<h3>
+							<svg viewBox="0 0 24 24"><path d="M12 2 2 7v10l10 5 10-5V7L12 2zm0 2.24L19.53 8 12 11.76 4.47 8 12 4.24zM4 9.62l7 3.5v6.26l-7-3.5V9.62zm9 9.76v-6.26l7-3.5v6.26l-7 3.5z"/></svg>
+							功能一览
+						</h3>
+						<div class="lk-feat" style="margin-top:12px;">
+							<div class="lk-feat-item">
+								<div class="lk-feat-ico" style="background:linear-gradient(135deg,#ff5c7a,#ff9a62);">
+									<svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm-3.5 9a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3zm7 0a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3zM12 11.5c2.5 0 4.5 1.2 4.5 2.6 0 .9-.8 1.4-1.6 1.4-.7 0-1.1-.4-1.6-.4-.4 0-.6.2-.8.2s-.4-.2-.8-.2c-.5 0-1.6.4-1.6.4-.8 0-1.6-.5-1.6-1.4 0-1.4 2-2.6 4.5-2.6z"/></svg>
+								</div>
+								<b>笑话大全</b>
+								<span>随机段子配插图，看完心情好一整天</span>
+							</div>
+							<div class="lk-feat-item">
+								<div class="lk-feat-ico" style="background:linear-gradient(135deg,#7c5cff,#4aa8ff);">
+									<svg viewBox="0 0 24 24"><path d="M12 3v10.55A4 4 0 1 0 14 17V7h4V3h-6z"/></svg>
+								</div>
+								<b>在线电台</b>
+								<span>按风格分频道，滚动歌词 + 播放列表</span>
+							</div>
+							<div class="lk-feat-item">
+								<div class="lk-feat-ico" style="background:linear-gradient(135deg,#12b5a5,#4dd0a4);">
+									<svg viewBox="0 0 24 24"><path d="M4 4h16a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1zm2 4v2h12V8H6zm0 4v2h12v-2H6zm0 4v2h8v-2H6z"/></svg>
+								</div>
+								<b>科技资讯</b>
+								<span>多源聚合，详情页直接读全文</span>
+							</div>
+							<div class="lk-feat-item">
+								<div class="lk-feat-ico" style="background:linear-gradient(135deg,#ffb020,#ffc53d);">
+									<svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm1 15h-2v-2h2v2zm1.8-6.4-.9.9c-.7.7-.9 1.1-.9 2.5h-2v-.5c0-1.1.4-1.8 1.1-2.5l1.2-1.2c.4-.3.6-.8.6-1.2 0-1-.8-1.7-1.8-1.7s-1.8.7-1.9 1.7H8c0-2 1.8-3.6 4-3.6s3.9 1.5 3.9 3.5c0 .9-.3 1.6-.9 2.1z"/></svg>
+								</div>
+								<b>轻量体验</b>
+								<span>原生 H5，秒开不卡顿，离线也能用</span>
+							</div>
+						</div>
+					</div>
+
+					<div class="lk-about-card">
+						<h3>
+							<svg viewBox="0 0 24 24"><path d="M3 5h18v2H3V5zm0 6h18v2H3v-2zm0 6h12v2H3v-2z"/></svg>
+							数据来源
+						</h3>
+						<div class="lk-info-row"><span class="k">笑话</span><span class="v">素颜 API / ShowAPI / JokeAPI</span></div>
+						<div class="lk-info-row"><span class="k">电台</span><span class="v">Audius（可切换网易云）</span></div>
+						<div class="lk-info-row"><span class="k">资讯</span><span class="v">爱范儿 · 极客公园 · IT之家 · 少数派</span></div>
+					</div>
+
+					<div class="lk-about-card">
+						<h3>
+							<svg viewBox="0 0 24 24"><path d="M12 2 4 6v6c0 5 3.4 9.3 8 10 4.6-.7 8-5 8-10V6l-8-4zm-1 14-4-4 1.4-1.4L11 13.2l5.6-5.6L18 9l-7 7z"/></svg>
+							技术说明
+						</h3>
+						<div class="lk-info-row"><span class="k">前端</span><span class="v">DCloud MUI + jQuery + 原生 JS</span></div>
+						<div class="lk-info-row"><span class="k">后端</span><span class="v">Node.js 零依赖服务 <code>server.js</code></span></div>
+						<div class="lk-info-row"><span class="k">接口前缀</span><span class="v"><code>/app_backend/</code></span></div>
+						<div class="lk-info-row"><span class="k">仓库</span><span class="v">本仓库已重构为可在本地浏览器直接运行</span></div>
+					</div>
+
+					<p class="lk-about-sub" style="text-align:center;margin-top:18px;">
+						© 2026 乐开心 · 保持快乐
+					</p>
+				</div>
 			</div>
 		</div>
 	</body>
-	
-	
+
 	<script>
 		var access_host = (window.LK_API_HOST || (location.protocol + '//' + location.host)) + '/app_backend/';
 		// 旧后端 www.80shihua.com 已失效，改为同源本地模拟接口（server.js）
 		//var baijia_url = 'http://baijia.baidu.com/ajax/labellatestarticle?page=1&pagesize=20&prevarticalid=463752&flagtogether=1&labelid=3';
 		//var music_url = 'https://www.douban.com/j/app/radio/people?version=100&app_name=radio_android&type=n&channel=';
 		//var channel_url = 'https://www.douban.com/j/app/radio/channels';
-		// 关于页指向本地模拟接口
-		document.getElementById('about-frame').src = access_host + 'rabit.php';
 	</script>
-
-		
 
 	<script>
 		/**
-		 * 下拉刷新具体业务实现
+		 * 下拉刷新：重新拉一批段子（整体替换）
 		 */
 		function pulldownRefresh() {
 			setTimeout(function() {
-				location.reload();
-			}, 1500);
+				loadJokes(false);
+				mui('#tabbar').pullRefresh().endPullDownRefresh();
+			}, 600);
 		}
-		var count = 0;
 		/**
-		 * 上拉加载具体业务实现
+		 * 上拉加载：追加更多段子
 		 */
 		function pullupRefresh() {
 			setTimeout(function() {
-      			var page = parseInt($('#tabbar').attr('data-page'));
-      			mui('#tabbar').pullRefresh().endPullupToRefresh(false);
-				$.ajax({
-					type:"get",
-					url:access_host+"getjoke.php?p=" + page,
-					dataType : 'json',
-					async:true,
-					success:function(result){
-						var data = {
-							joke : result
-						};
-						var tpl = document.getElementById('tpl').innerHTML;
-						var jokecontent = juicer(tpl, data);
-						$('#tabbar').find('.mui-table-view').append(jokecontent);
-						$('#tabbar').attr('data-page',page+1);
-					}
-				});
-			}, 1500);
+				mui('#tabbar').pullRefresh().endPullupToRefresh(false);
+				loadJokes(true);
+			}, 600);
 		}
-	
+
 		mui.init({
 			swipeBack:true ,//启用右滑关闭功能,
 			pullRefresh: {
@@ -169,9 +247,9 @@
 					contentrefresh: '正在加载...',
 					callback: pullupRefresh
 				}
-			}		
+			}
 		});
-		
+
 		mui.plusReady(function() {
             //首页返回键处理
             //处理逻辑：1秒内，连续两次按返回键，则退出应用；
@@ -191,75 +269,280 @@
                 }
             }, false);
         });
-		
-		$.ajax({
-			type:"get",
-			url:access_host+"getnews.php",
-			dataType : 'json',
-			async:true,
-			success:function(result){
-				// 用映射保存完整文章数据，点击详情时直接取用（避免长文本破坏 HTML 属性）
-				window.NEWS_MAP = {};
-				(result || []).forEach(function(a){ window.NEWS_MAP[a.ID] = a; });
-				// 注意：juicer 取不到全局变量，access_host 必须放进 data
-				var data = {
-					baijia : result,
-					access_host : access_host
-				};
-				var tpl = document.getElementById('baijia_tpl').innerHTML;
-				var baijiacontent = juicer(tpl, data);
-				$("#baijia_tpl").before(baijiacontent);
+
+		/* ==================================================================
+		 * 笑话列表：卡片网格渲染
+		 * ================================================================== */
+		// 保留完整段子对象，详情页按 id 取用（避免把长文本塞进 URL/属性）
+		var JOKE_MAP = {};
+
+		/*
+		 * 可点击元素统一绑定
+		 * ------------------------------------------------------------
+		 * MUI 的 pullRefresh 会在 touchstart 阶段调用 preventDefault()，
+		 * 导致移动端浏览器不再合成 click 事件 —— 真机上卡片「点了没反应」。
+		 * MUI 自己会派发冒泡的 tap 事件，所以这里同时监听 click 与 tap，
+		 * 并用 400ms 时间窗去重，避免同一次操作触发两次。
+		 */
+		var LK_CLICK_GUARD = {};
+		var LK_CLICK_SEQ = 0;
+		function bindTap(selector, handler){
+			var key = selector + '|' + (handler._lkId || (handler._lkId = ++LK_CLICK_SEQ));
+			function run(e){
+				var now = Date.now();
+				if (LK_CLICK_GUARD[key] && now - LK_CLICK_GUARD[key] < 400) return;
+				LK_CLICK_GUARD[key] = now;
+				handler.call(this, e);
 			}
-		});
-		
-		$.ajax({
-			type:"get",
-			url:access_host+"getjoke.php",
-			dataType : 'json',
-			async:true,
-			success:function(result){
-				var data = {
-					joke : result
-				};
-				var tpl = document.getElementById('tpl').innerHTML;
-				var jokecontent = juicer(tpl, data);
-				$("#tpl").before(jokecontent);
+			$(document).on('click', selector, run);
+			$(document).on('tap', selector, run);
+		}
+
+		function escHtml(s){
+			return String(s == null ? '' : s)
+				.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+				.replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+		}
+
+		/*
+		 * 远端配图走后端代理：IT之家 / 极客公园 等站点对直链访问返回 403，
+		 * 由后端带来源站 Referer 抓取后再回传，前端只管显示。
+		 * 本地资源（/img/...）原样返回。
+		 */
+		function lkProxyImg(url){
+			var u = String(url || '');
+			if (!u) return '';
+			if (!/^https?:\/\//i.test(u)) return u;
+			return access_host + 'getimage.php?url=' + encodeURIComponent(u);
+		}
+
+		function renderJokes(list, append){
+			list = list || [];
+			if (!list.length) {
+				if (!append) {
+					$('#jokeGrid').empty();
+					$('#jokeEmpty').show();
+				}
+				return;
 			}
+			$('#jokeEmpty').hide();
+			var base = append ? $('#jokeGrid .lk-joke').length : 0;
+			var html = '';
+			list.forEach(function(it, i){
+				var id = 'jk' + (base + i) + '_' + Date.now();
+				JOKE_MAP[id] = it;
+				html += '<article class="lk-joke" data-jid="' + id + '">' +
+					'<div class="lk-joke-img">' +
+						'<img src="' + escHtml(it.img || '') + '" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.display=\'none\'">' +
+						'<span class="lk-joke-no">' + (base + i + 1) + '</span>' +
+					'</div>' +
+					'<div class="lk-joke-body">' +
+						'<h3 class="lk-joke-title">' + escHtml(it.title || '每日段子') + '</h3>' +
+						'<p class="lk-joke-text">' + escHtml(it.text || '') + '</p>' +
+						'<div class="lk-joke-foot">' +
+							'<span class="lk-chip">乐开心</span>' +
+							'<span class="lk-joke-go">全文<svg viewBox="0 0 24 24"><path d="M8.6 4.6 7.2 6l6 6-6 6 1.4 1.4L16 12 8.6 4.6z"/></svg></span>' +
+						'</div>' +
+					'</div>' +
+				'</article>';
+			});
+			if (append) $('#jokeGrid').append(html);
+			else $('#jokeGrid').html(html);
+			updateJokeStats();
+		}
+
+		function updateJokeStats(){
+			var n = $('#jokeGrid .lk-joke').length;
+			$('#jokeCount').text(n);
+			$('#jokeImgCount').text(n);
+			$('#jokeSub').text(n ? '共 ' + n + ' 条' : '下拉可刷新');
+		}
+
+		// 「换一批」按钮：重新拉一批段子并替换
+		bindTap('#jokeRefresh', function(){
+			var $b = $(this);
+			$b.css('opacity', 0.5);
+			loadJokes(false);
+			setTimeout(function(){ $b.css('opacity', 1); }, 500);
 		});
-		
+
+		function loadJokes(append){
+			$.ajax({
+				type:"get",
+				url:access_host+"getjoke.php",
+				dataType : 'json',
+				async:true,
+				success:function(result){
+					renderJokes(result, append);
+				},
+				error:function(){
+					if (!append) {
+						$('#jokeGrid').empty();
+						$('#jokeEmpty').show();
+					}
+				}
+			});
+		}
+
+		/* ==================================================================
+		 * 新闻列表：头条大卡 + 列表卡片
+		 * ================================================================== */
+		var NEWS_MAP = {};
+		var NEWS_SOURCE_ORDER = {};
+
+		// 不同来源用不同色块 + 文字标签双重编码（不依赖色相区分）
+		var SOURCE_STYLE = [
+			{ c: '#ff5c7a', cls: '' },
+			{ c: '#7c5cff', cls: 'lk-chip-violet' },
+			{ c: '#12b5a5', cls: 'lk-chip-teal' },
+			{ c: '#4aa8ff', cls: 'lk-chip-blue' },
+			{ c: '#ffc53d', cls: 'lk-chip-gold' }
+		];
+		// 来源名 -> 配色序号：按名称哈希，稳定且与详情页 sourceColor() 保持一致
+		function sourceIndex(name){
+			var k = String(name || '资讯');
+			var sum = 0;
+			for (var i = 0; i < k.length; i++) sum = (sum * 31 + k.charCodeAt(i)) >>> 0;
+			return sum % SOURCE_STYLE.length;
+		}
+
+		function newsMetaHtml(a){
+			var st = SOURCE_STYLE[sourceIndex(a.m_source) % SOURCE_STYLE.length];
+			var time = formatNewsTime(a.m_published);
+			var html = '<div class="lk-news-meta">';
+			html += '<span class="lk-source"><i style="background:' + st.c + '"></i>' + escHtml(a.m_source || '资讯') + '</span>';
+			if (time) html += '<span>' + escHtml(time) + '</span>';
+			html += '</div>';
+			return html;
+		}
+
+		function formatNewsTime(s){
+			if (!s) return '';
+			var d = new Date(s);
+			if (isNaN(d.getTime())) return '';
+			var p = function(v){ return (v<10?'0':'')+v; };
+			return p(d.getMonth()+1) + '-' + p(d.getDate()) + ' ' + p(d.getHours()) + ':' + p(d.getMinutes());
+		}
+
+		function renderNews(list){
+			list = list || [];
+			if (!list.length) {
+				$('#newsLead').empty();
+				$('#newsList').empty();
+				$('#newsEmpty').show();
+				$('#newsCount').text(0);
+				$('#newsSourceCount').text(0);
+				return;
+			}
+			$('#newsEmpty').hide();
+			// 统计来源数（用于 Hero 概览）
+			var seen = {};
+			list.forEach(function(a){
+				seen[a.m_source || '资讯'] = 1;
+			});
+			NEWS_SOURCE_ORDER = seen;
+
+			var lead = list[0];
+			var rest = list.slice(1);
+			var leadHtml = '<a class="lk-news-lead" href="javascript:;" data-bjaid="' + escHtml(lead.ID) + '">';
+			leadHtml += '<div class="lk-news-lead-img">';
+			if (lead.m_image_url) {
+				leadHtml += '<img src="' + escHtml(lkProxyImg(lead.m_image_url)) + '" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.display=\'none\';this.parentNode.querySelector(\'.lk-news-fallback\').style.display=\'flex\'">';
+			}
+			leadHtml += '<div class="lk-news-fallback"' + (lead.m_image_url ? ' style="display:none;"' : '') + '>' +
+				'<svg viewBox="0 0 24 24"><path d="M4 4h16a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1zm2 4v2h12V8H6zm0 4v2h12v-2H6zm0 4v2h8v-2H6z"/></svg></div>';
+			leadHtml += '</div><div class="lk-news-lead-body">';
+			leadHtml += newsMetaHtml(lead);
+			leadHtml += '<h3 class="lk-news-lead-title">' + escHtml(lead.m_title || '') + '</h3>';
+			if (lead.m_summary) leadHtml += '<p class="lk-news-lead-sum">' + escHtml(lead.m_summary) + '</p>';
+			leadHtml += '</div></a>';
+			$('#newsLead').html(leadHtml);
+
+			var html = '';
+			rest.forEach(function(a){
+				html += '<a class="lk-news" href="javascript:;" data-bjaid="' + escHtml(a.ID) + '">';
+				html += '<div class="lk-news-thumb">';
+				if (a.m_image_url) {
+					html += '<img src="' + escHtml(lkProxyImg(a.m_image_url)) + '" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.display=\'none\';this.parentNode.querySelector(\'.lk-news-fallback\').style.display=\'flex\'">';
+				}
+				html += '<div class="lk-news-fallback"' + (a.m_image_url ? ' style="display:none;"' : '') + '>' +
+					'<svg viewBox="0 0 24 24"><path d="M4 4h16a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1zm2 4v2h12V8H6zm0 4v2h12v-2H6zm0 4v2h8v-2H6z"/></svg></div>';
+				html += '</div><div class="lk-news-main">';
+				html += newsMetaHtml(a);
+				html += '<h3 class="lk-news-title">' + escHtml(a.m_title || '') + '</h3>';
+				if (a.m_summary) html += '<p class="lk-news-sum">' + escHtml(a.m_summary) + '</p>';
+				html += '</div></a>';
+			});
+			$('#newsList').html(html);
+
+			$('#newsCount').text(list.length);
+			$('#newsSourceCount').text(Object.keys(NEWS_SOURCE_ORDER).length);
+			$('#newsSub').text('共 ' + list.length + ' 条');
+		}
+
+		function loadNews(){
+			$.ajax({
+				type:"get",
+				url:access_host+"getnews.php",
+				dataType : 'json',
+				async:true,
+				success:function(result){
+					// 用映射保存完整文章数据，点击详情时直接取用（避免长文本破坏 HTML 属性）
+					NEWS_MAP = {};
+					(result || []).forEach(function(a){ NEWS_MAP[a.ID] = a; });
+					renderNews(result);
+				},
+				error:function(){
+					$('#newsLead').empty();
+					$('#newsList').empty();
+					$('#newsEmpty').show();
+				}
+			});
+		}
+
+		/* ==================================================================
+		 * 初始化
+		 * ================================================================== */
+		loadJokes(false);
+		loadNews();
+
 		//$("#tabbar-with-about").load('http://www.80shihua.com/app_backend/rabit.php');
-		
-//		$.ajax({
-//			type:"get",
-//			url:'http://www.80shihua.com/app_backend/rabit.php',
-//			dataType : 'html',
-//			async:true,
-//			success:function(result){
-//				
-//			}
-//		});
-//		
-		
-		// 电台频道：从后端按当前数据源（Audius / 网易云）拉取
+
+		// 电台频道：从后端按当前数据源（Audius / 网易云）拉取，渲染为渐变卡片网格
+		var LK_CHANNEL_STYLE = [
+			{ g: 'linear-gradient(135deg,#ff5c7a,#ff9a62)', icon: '<svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>' },
+			{ g: 'linear-gradient(135deg,#7c5cff,#4aa8ff)', icon: '<svg viewBox="0 0 24 24"><path d="M7 2v11h3v9l7-12h-4l4-8z"/></svg>' },
+			{ g: 'linear-gradient(135deg,#12b5a5,#4dd0a4)', icon: '<svg viewBox="0 0 24 24"><path d="M12 3v10.55A4 4 0 1 0 14 17V7h4V3z"/></svg>' },
+			{ g: 'linear-gradient(135deg,#ff7a45,#ffc53d)', icon: '<svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54z"/></svg>' },
+			{ g: 'linear-gradient(135deg,#eb2f96,#ff7ac6)', icon: '<svg viewBox="0 0 24 24"><path d="M12 3a9 9 0 0 0-9 9v7a2 2 0 0 0 2 2h3v-8H5v-1a7 7 0 0 1 14 0v1h-3v8h3a2 2 0 0 0 2-2v-7a9 9 0 0 0-9-9z"/></svg>' },
+			{ g: 'linear-gradient(135deg,#2f54eb,#597ef7)', icon: '<svg viewBox="0 0 24 24"><path d="M12 3a9 9 0 1 0 9 9c0-.46-.04-.92-.1-1.36a5.39 5.39 0 0 1-4.4 2.36 5.4 5.4 0 0 1-5.4-5.4c0-1.81.89-3.42 2.26-4.4A9.1 9.1 0 0 0 12 3z"/></svg>' }
+		];
+		function renderChannels(list){
+			var html = '';
+			(list || []).forEach(function(ch, i){
+				var s = LK_CHANNEL_STYLE[i % LK_CHANNEL_STYLE.length];
+				html += '<li class="lk-channel jump_music_detail" data-channelid="' + ch.channel_id + '">' +
+					'<span class="lk-ch-icon" style="background:' + s.g + '">' + s.icon + '</span>' +
+					'<span class="lk-ch-name">' + String(ch.name || '').replace(/[<>&"]/g, function(c){ return {'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;'}[c]; }) + '</span>' +
+					'<span class="lk-ch-go">›</span>' +
+				'</li>';
+			});
+			$('#lk-channels').html(html);
+		}
 		$.ajax({
 			type:"get",
 			url:access_host+"getchannels.php",
 			dataType : 'json',
 			async:true,
 			success:function(result){
-				var data = { channel: result };
-				var tpl = document.getElementById('music_tpl').innerHTML;
-				$("#tabbar-with-radio").find('.mui-table-view').html(juicer(tpl, data));
+				renderChannels(result);
 			},
 			error:function(){
 				// 极端情况下后端不可达，给一个兜底频道
-				var data = { channel: [{ channel_id: 'trending', name: '推荐' }] };
-				var tpl = document.getElementById('music_tpl').innerHTML;
-				$("#tabbar-with-radio").find('.mui-table-view').html(juicer(tpl, data));
+				renderChannels([{ channel_id: 'trending', name: '推荐' }]);
 			}
 		});
-		
-		
+
 		if (mui.os.plus) {
 			mui.plusReady(function() {
 				setTimeout(function() {
@@ -272,9 +555,7 @@
 				mui('#tabbar').pullRefresh().pullupLoading();
 			});
 		}
-	
-		
-	
+
 		function gotoPage(url, params){
 			var qs = [];
 			for (var k in params){ if (params.hasOwnProperty(k)) qs.push(k + '=' + encodeURIComponent(params[k])); }
@@ -289,9 +570,64 @@
 			}
 		}
 
+		/*
+		 * 5+ 下控制 URL 长度：真机 WebView 对超长 URL 有截断风险，
+		 * 中文经 encodeURIComponent 后膨胀约 3 倍，正文可能撑爆。
+		 * 策略：5+ 只把「短且必需」的字段（url）留在 query，
+		 *       长文本（标题 / 摘要 / 正文）放 plus.storage，浏览器则全量传参。
+		 */
+		function gotoDetail(url, idKey, id, params, shortKeys){
+			if (mui.os && mui.os.plus) {
+				var short = {};
+				shortKeys.forEach(function(k){ short[k] = params[k]; });
+				short[idKey] = id;
+				gotoPage(url, short);
+			} else {
+				gotoPage(url, params);
+			}
+		}
+
+		// 生成短 id（原文 id 可能很长，如带 utm 参数的 URL）
+		function shortKey(prefix, raw){
+			var s = String(raw || '');
+			var h = 5381;
+			for (var i = 0; i < s.length; i++) { h = ((h * 33) ^ s.charCodeAt(i)) >>> 0; }
+			return prefix + '_' + h.toString(36) + '_' + s.length.toString(36);
+		}
+
+		/*
+		 * 详情数据传递
+		 * ------------------------------------------------------------
+		 * 浏览器：sessionStorage（同源共享，足够）
+		 * 5+ 真机：sessionStorage 在各 webview 间可能隔离，改用 plus.storage
+		 *         （原生共享存储），并保留 URL 参数作为最终兜底。
+		 */
+		function lkSaveDetail(key, data){
+			var raw = JSON.stringify(data);
+			try { sessionStorage.setItem(key, raw); } catch (e) { /* 忽略 */ }
+			try {
+				if (window.plus && plus.storage) {
+					plus.storage.setItem(key, raw);
+				}
+			} catch (e) { /* 忽略 */ }
+		}
+		function lkReadDetail(key){
+			var raw = null;
+			try { raw = sessionStorage.getItem(key); } catch (e) { /* 忽略 */ }
+			if (!raw) {
+				try {
+					if (window.plus && plus.storage) raw = plus.storage.getItem(key);
+				} catch (e) { /* 忽略 */ }
+			}
+			if (!raw) return null;
+			try { return JSON.parse(raw); } catch (e) { return null; }
+		}
+
 		$(document).ready(function(){
-			$(document).on('click','.jump_music_detail',function(){
+			bindTap('.jump_music_detail', function(){
 				var channelid = $(this).attr('data-channelid');
+				// 记录频道名，供播放器顶部展示（只取名称文本，不带箭头符号）
+				window.LK_CHANNEL_NAME = ($(this).find('.lk-ch-name').text() || $(this).text() || '').replace(/[›>]\s*$/, '').trim();
 				if (mui.os && mui.os.plus) {
 					// 真机 5+ 环境：仍用原生 webview 打开独立播放页
 					mui.openWindow({ url: 'plus/music.html?channelid=' + channelid, id: 'music' + channelid });
@@ -301,25 +637,46 @@
 				}
 			});
 
-			$(document).on('click','.jump_baijia_detail',function(){
-				var a = (window.NEWS_MAP && window.NEWS_MAP[$(this).attr('data-bjaid')]) || {};
-				gotoPage('plus/news_detail.html', {
+			// 新闻详情：整条数据走存储，URL 只传短 key，避免长文本/特殊字符破坏 query
+			bindTap('.lk-news, .lk-news-lead', function(){
+				var id = $(this).attr('data-bjaid');
+				var a = (window.NEWS_MAP && window.NEWS_MAP[id]) || {};
+				if (!a.m_url) { return; }
+				// 存储键用短 id（原文可能是带 utm 的长 URL）
+				var sk = shortKey('n', id);
+				try {
+					lkSaveDetail('lk_news_' + sk, {
+						url: a.m_url || '', title: a.m_title || '', img: a.m_image_url || '',
+						summary: a.m_summary || '', source: a.m_source || '', time: a.m_published || ''
+					});
+				} catch (e) { /* 忽略，退回 URL 参数 */ }
+				gotoDetail('plus/news_detail.html', 'nid', sk, {
+					nid: sk,
 					url: a.m_url || '',
 					title: a.m_title || '',
 					img: a.m_image_url || '',
 					summary: a.m_summary || '',
 					source: a.m_source || '',
 					time: a.m_published || ''
-				});
+				}, ['url']);
 			});
 
-			// 笑话详情：标题/图片/文字通过 URL query 传给详情页
-			$(document).on('click','.jump_joke_detail',function(){
-				gotoPage('plus/joke_detail.html', {
-					title: $(this).attr('data-title'),
-					img: $(this).attr('data-img'),
-					text: $(this).attr('data-text')
-				});
+			// 笑话详情：整段文本走 sessionStorage（避免 URL 过长被截断 / 编码出错）
+			bindTap('.lk-joke', function(){
+				var id = $(this).attr('data-jid');
+				var j = (window.JOKE_MAP && window.JOKE_MAP[id]) || {};
+				if (!j.title && !j.text) return;
+				try {
+					lkSaveDetail('lk_joke_' + id, {
+						title: j.title || '', img: j.img || '', text: j.text || ''
+					});
+				} catch (e) { /* 隐私模式下不可用，退回 URL 参数 */ }
+				gotoDetail('plus/joke_detail.html', 'jid', id, {
+					jid: id,
+					title: j.title || '',
+					img: j.img || '',
+					text: j.text || ''
+				}, []);
 			});
 		});
 
@@ -349,8 +706,8 @@
 			var lines = text.split('\n'),
 				pattern = /\[\d{2}:\d{2}.\d{2}\]/g,
 				result = [];
-			while (lines.length && !pattern.test(lines[0])) { lines = lines.slice(1); }
-			lines[lines.length - 1].length === 0 && lines.pop();
+		while (lines.length && !pattern.test(lines[0])) { lines = lines.slice(1); }
+		lines.length && lines[lines.length - 1].length === 0 && lines.pop();
 			lines.forEach(function(v, i, a) {
 				var time = v.match(pattern),
 					value = v.replace(pattern, '');
@@ -364,7 +721,9 @@
 			result.sort(function(a, b) { return a[0] - b[0]; });
 			return result;
 		}
-		function get_lrc(song){
+		// 歌词请求令牌：切台后旧请求的回调直接丢弃，避免歌词错插到新播放器
+		var lrcToken = 0;
+		function get_lrc(song, token){
 			$.ajax({
 				type:"get",
 				url:access_host+'getlrc.php?song='+song,
@@ -378,31 +737,34 @@
 						dataType:'html',
 						async:true,
 						success:function(result){
+							if (token !== lrcToken) return; // 已切台/切歌，丢弃
 							lyric = parseLyric(result);
-							var lyricContainer = $('.music_lrc')[0];
-							if (!lyricContainer) return;
-							fragment = document.createDocumentFragment();
+							// 歌词数据交给播放器引擎同步（window.LK_LYRIC_SYNC 由 AudioPlayer.js 提供，
+							// 进度条刷新由其内部 rAF/timeupdate 驱动，互不干扰）
+							window.LK_LYRIC = lyric;
+							var $ul = $('.music_lrc');
+							if (!$ul.length) return;
+							$ul.empty();
+							var fragment = document.createDocumentFragment();
 							lyric.forEach(function(v, i) {
 								var line = document.createElement('li');
 								line.id = 'line-' + i;
 								line.textContent = v[1];
 								fragment.appendChild(line);
 							});
-							lyricContainer.appendChild(fragment);
-							$('audio').unbind("timeupdate").bind("timeupdate", function(e) {
-								for (var i = 0, l = lyric.length; i < l; i++) {
-									if (this.currentTime > lyric[i][0]) {
-										$('#line-'+i).css('color','yellow').siblings().css('color','white');
-										$('.music_lrc').css('margin-top','-'+21*i+'px');
-									};
-								};
-							});
+							$ul[0].appendChild(fragment);
+							if (window.LK_LYRIC_RESET) window.LK_LYRIC_RESET();
+							if (window.LK_LYRIC_SYNC) {
+								var audio = $('#myAudio audio')[0];
+								window.LK_LYRIC_SYNC(audio ? audio.currentTime : 0);
+							}
 						}
 					});
 				}
 			});
 		}
 		function loadMusic(channelid){
+			var token = ++lrcToken;
 			$.ajax({
 				type:"get",
 				url:access_host+'getmusic.php?id='+channelid,
@@ -415,19 +777,22 @@
 					$a.empty().append(juicer(tpl, data));
 					$a.initAudio();
 					if (result.song && result.song.length) {
-						get_lrc(result.song[0]['title']);
+						get_lrc(result.song[0]['title'], token);
 					}
 				}
 			});
 		}
 		function currentSongTitle(){
+			// 优先走播放器 API：返回纯歌名（与歌词检索 key 一致）
+			var audio = $('#myAudio audio')[0];
+			if (audio && audio.lkPlayer) return audio.lkPlayer.titleAt(audio.lkPlayer.index());
 			var idx = $('.music_list li.active').index();
 			if (idx < 0) idx = 0;
 			return $('#myAudio source').eq(idx).attr('title') || '';
 		}
 		function reloadLyricForCurrent(){
 			var t = currentSongTitle();
-			if (t) { $('.music_lrc').empty(); get_lrc(t); }
+			if (t) { $('.music_lrc').empty(); get_lrc(t, ++lrcToken); }
 		}
 		function showRadioPlayer(channelid){
 			$('#radio-list-view').hide();
@@ -438,22 +803,12 @@
 			$('#radio-player-view').hide();
 			$('#radio-list-view').show();
 		}
-		$(document).on('click','#radio-back-list', hideRadioPlayer);
-		$(document).on('click', '.btn_next, .btn_previous', function(){ setTimeout(reloadLyricForCurrent, 60); });
-		$(document).on('click', '.music_list li', function(){
-			var idx = $(this).index();
-			var $srcs = $('#myAudio source');
-			if (idx < 0 || idx >= $srcs.length) return;
+		// 切歌事件由 AudioPlayer 统一派发（含自动接歌），这里只负责刷新歌词
+		$(document).on('lk:songchange', function(){ reloadLyricForCurrent(); });
+		// 点击播放列表切歌：走播放器 API，保证内部索引/封面/进度同步
+		bindTap('.music_list li', function(){
 			var audio = $('#myAudio audio')[0];
-			if (!audio) return;
-			audio.src = $srcs.eq(idx).prop('src');
-			audio.play();
-			reloadLyricForCurrent();
+			if (audio && audio.lkPlayer) audio.lkPlayer.playIndex($(this).index());
 		});
-		
-		
-		
-		
-		
 	</script>
 </html>
