@@ -56,6 +56,11 @@ jobs:
           npx cap add android
           npx cap sync android
 
+      # 原生改动统一放 mobile/native/，每次生成工程后覆盖过去（否则会被 cap add 冲掉）
+      # 当前内容：MainActivity 重写 onBackPressed —— 返回键/全面屏侧滑优先回退 WebView 历史
+      - name: 注入原生覆盖（返回键处理）
+        run: node tools/apply_native_overrides.js
+
       # Release 签名（可选）：在仓库 Settings -> Secrets 配置以下 4 个值后生效，
       # 未配置则跳过，Release 产出未签名包（能构建但不能安装）。
       #   LEKAIXIN_KEYSTORE_BASE64   keystore 文件的 base64（keytool 生成）

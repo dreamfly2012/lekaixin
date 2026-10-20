@@ -153,8 +153,7 @@ APK 的 WebView 里跑不了 Node 后端，所以打包分两步：**先把 `ser
 **方式一：本机打包（推荐，生成精确最小集）**
 
 ```bash
-node tools/pack_server.js          # 白名单复制运行时必需文件到 dist/server/（约 1.5MB）
-tar -czf dist/lekaixin-server.tar.gz -C dist/server .
+node tools/pack_server.js --tar     # 白名单复制到 dist/server/（约 1.5MB）并生成 dist/lekaixin-server.tar.gz
 ```
 
 把 `dist/lekaixin-server.tar.gz` 通过宝塔「文件」菜单上传，在站点目录解压：
@@ -248,6 +247,38 @@ curl https://你的域名/app_backend/getchannels.php        # 电台频道
 cd /www/wwwroot/lekaixin && git pull && pm2 restart lekaixin
 ```
 
+#### 1.8 更新后「页面没变化」怎么查
+
+`server.js` 内置了自检端点 `GET /__lk_version`，返回**进程实际运行目录、启动时间、关键文件 mtime**，先看它再往下查：
+
+```bash
+# ① 文件到底落到哪了（解压多一层 dist/server/ 是最常见原因）
+ls -l /www/wwwroot/lekaixin/server.js /www/wwwroot/lekaixin/index.html
+find /www/wwwroot/lekaixin -maxdepth 3 -name server.js   # 应该只有一条
+
+# ② 进程跑的是哪个目录（宝塔「Node 项目目录」≠「网站目录」时会踩）
+pm2 describe lekaixin | grep -Ei "script path|exec cwd|status|pid"
+ss -lntp | grep 8080                                     # 确认没有别的旧 node 占着端口
+
+# ③ 直连 Node，绕过 Nginx / Cloudflare
+curl -s http://127.0.0.1:8080/__lk_version
+curl -s http://127.0.0.1:8080/plus/news_detail.html | head -5
+
+# ④ 经域名再取一次，和 ③ 对比
+curl -sI https://你的域名/css/pages.css                  # 看 cf-cache-status / last-modified / etag
+```
+
+判读：
+
+| 现象 | 原因 | 处理 |
+|---|---|---|
+| ③ 正常、④ 是旧的 | Nginx 静态 location 直读站点目录（宝塔默认 `location ~ .*\.(js\|css)$` 不带 proxy_pass），或 Cloudflare 缓存 | 删掉/改写那条 location 让它走 `proxy_pass`；CF 面板 Purge Everything |
+| `__lk_version` 里 `root` 不是 `/www/wwwroot/lekaixin`，或 `assets` 全是 `null` | 文件没解压到目录根部（多了 `dist/server/` 一层） | `tar -xzf xxx.tar.gz -C /www/wwwroot/lekaixin`，解压后 `server.js` 必须与该目录同级 |
+| `startedAt` 还是几小时前 | 进程没真正重启，或 8080 被另一个旧进程占着 | `pm2 restart lekaixin`，`pm2 list` 看 restarts 是否 +1；必要时 `pm2 delete` 后重加 |
+| `assets` 里某个文件 mtime 是旧的 | 那个文件没覆盖成功（常见于上传中断/只传了部分） | 重传，比对本地 `ls -l dist/server/...` |
+
+> 静态资源现在带 `ETag` + `Cache-Control: no-cache`：改动后浏览器会回源校验，没改动走 304。以前既没有校验器也没有缓存指令，css/js 被 CDN/浏览器按启发式规则缓存住，是「改了没生效」的常见来源。
+
 ### 2. 组装 Web 资源
 
 ```bash
@@ -330,7 +361,8 @@ npm i -D @capacitor/assets && npx capacitor-assets generate --android
 
 - **后端必须 HTTPS**：Android 9+ 默认禁止明文流量；本地联调如用 HTTP（如 `http://192.168.x.x:3000`），需在 `mobile/android/app/src/main/AndroidManifest.xml` 的 `<application>` 上加 `android:usesCleartextTraffic="true"`（仅调试用）。
 - **接口跨域**：APK 内页面 origin 是 `https://localhost`，访问远程后端走 CORS；`backend/reply.js` 已对所有响应加 `Access-Control-Allow-Origin: *`。
-- **真机返回键 / 5+ API**：`plus` 在 WebView 中不存在，代码已做浏览器降级（`mui.os.plus` 判断），不影响使用。
+- **真机返回键 / 5+ API**：`plus` 在 WebView 中不存在，代码已做浏览器降级（`mui.os.plus` 判断），不影响使用。`plus.key.addEventListener('backbutton')` 那几段在 APK 里永远不会触发。
+- **Android 返回键 / 全面屏侧滑返回**：Capacitor 7 核心库不处理返回键（默认 `Activity.finish()`，按返回直接退出应用）。已在 `mobile/native/MainActivity.java` 重写 `onBackPressed()`：WebView 有历史则 `goBack()`，到根页面才退出。`mobile/android/` 是 `cap add` 生成物且每次构建重建，**原生改动一律放 `mobile/native/`**，用 `node tools/apply_native_overrides.js` 覆盖进工程（CI 已内置该步骤）。
 - **应用信息**：`appId=com.lekaixin.app`、应用名「乐开心」、minSdk 23（Android 6.0+），配置见 `mobile/capacitor.config.json`。
 
 ## 模拟接口（路由见 backend/index.js）

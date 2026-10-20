@@ -21,6 +21,20 @@ const ROOT = __dirname;
 const PORT = process.env.PORT || 8080;
 const API_PREFIX = '/app_backend/';
 const routes = require('./backend');
+const STARTED_AT = new Date();
+
+// 部署自检端点用的关键文件（改动后重启即反映真实 mtime，用来确认线上是否换了文件）
+const VERSION_FILES = [
+  'server.js',
+  'index.html',
+  'css/pages.css',
+  'css/theme.css',
+  'css/music.css',
+  'js/AudioPlayer.js',
+  'plus/news_detail.html',
+  'plus/joke_detail.html',
+  'plus/music.html'
+];
 
 const MIME = {
   '.html': 'text/html; charset=utf-8',
@@ -71,24 +85,96 @@ async function handleApi(req, res, pathname, query) {
 }
 
 /* --------------------------- 静态托管 --------------------------- */
-function serveStatic(req, res, pathname) {
-  let rel = decodeURIComponent(pathname);
-  if (rel === '/' || rel === '') rel = '/index.html';
-  const filePath = safeJoin(ROOT, rel);
-  if (!filePath) { res.writeHead(403); res.end('Forbidden'); return; }
+/*
+ * 缓存策略：no-cache + ETag/Last-Modified
+ * 之前只发 Content-Type，没有校验器也没有缓存指令 —— 浏览器/Cloudflare 会按自己的
+ * 启发式规则缓存 css/js，改完文件刷新还是旧样式（"上传了没变化" 的常见原因之一）。
+ * 现在每次都回源校验，没改动走 304（几十字节），改动立即生效。
+ */
+function sendFile(req, res, filePath) {
   fs.stat(filePath, (err, stat) => {
-    let finalPath = filePath;
-    if (!err && stat.isDirectory()) {
-      finalPath = safeJoin(ROOT, path.join(rel, 'index.html'));
+    if (err || !stat.isFile()) {
+      res.writeHead(404, { 'Content-Type': 'text/plain; charset=utf-8' });
+      return res.end('Not Found');
     }
-    if (!finalPath) { res.writeHead(403); res.end('Forbidden'); return; }
-    fs.readFile(finalPath, (e, data) => {
-      if (e) { res.writeHead(404, { 'Content-Type': 'text/plain; charset=utf-8' }); res.end('Not Found'); return; }
-      const ext = path.extname(finalPath).toLowerCase();
-      res.writeHead(200, { 'Content-Type': MIME[ext] || 'application/octet-stream' });
+    const etag = 'W/"' + stat.size.toString(16) + '-' + Math.floor(stat.mtimeMs).toString(16) + '"';
+    const headers = {
+      ETag: etag,
+      'Last-Modified': new Date(stat.mtimeMs).toUTCString(),
+      'Cache-Control': 'no-cache'
+    };
+
+    const inm = req.headers['if-none-match'];
+    const ims = req.headers['if-modified-since'];
+    let notModified = false;
+    if (inm) {
+      notModified = inm.split(',').some((t) => t.trim() === etag);
+    } else if (ims) {
+      const t = Date.parse(ims);
+      notModified = !isNaN(t) && Math.floor(stat.mtimeMs / 1000) * 1000 <= t;
+    }
+    if (notModified) {
+      res.writeHead(304, headers);
+      return res.end();
+    }
+
+    fs.readFile(filePath, (e, data) => {
+      if (e) {
+        res.writeHead(404, { 'Content-Type': 'text/plain; charset=utf-8' });
+        return res.end('Not Found');
+      }
+      const ext = path.extname(filePath).toLowerCase();
+      headers['Content-Type'] = MIME[ext] || 'application/octet-stream';
+      headers['Content-Length'] = data.length;
+      res.writeHead(200, headers);
       res.end(data);
     });
   });
+}
+
+function serveStatic(req, res, pathname) {
+  let rel = decodeURIComponent(pathname);
+  if (rel === '/' || rel === '') rel = '/index.html';
+  let filePath = safeJoin(ROOT, rel);
+  if (!filePath) { res.writeHead(403); res.end('Forbidden'); return; }
+  fs.stat(filePath, (err, stat) => {
+    if (!err && stat.isDirectory()) {
+      filePath = safeJoin(ROOT, path.join(rel, 'index.html'));
+      if (!filePath) { res.writeHead(403); res.end('Forbidden'); return; }
+    }
+    sendFile(req, res, filePath);
+  });
+}
+
+/* --------------------------- 部署自检 --------------------------- */
+/*
+ * GET /__lk_version —— 确认「线上跑的到底是哪份代码、从哪个目录起的」
+ * 排查「上传了新包但页面没变化」时先看这个：
+ *   root / cwd 不对  -> 进程跑的是别的目录（最坑：解压多了一层 dist/server）
+ *   startedAt 是旧的 -> 进程压根没重启（或 PM2 里另有旧进程占着 8080）
+ *   assets[].mtime 是旧的 -> 文件没覆盖成功
+ */
+function handleVersion(res) {
+  const assets = {};
+  for (const rel of VERSION_FILES) {
+    try {
+      const st = fs.statSync(path.join(ROOT, rel));
+      assets[rel] = { mtime: st.mtime.toISOString(), size: st.size };
+    } catch (e) {
+      assets[rel] = null; // 文件缺失，也是重要信息
+    }
+  }
+  const body = JSON.stringify({
+    pid: process.pid,
+    node: process.version,
+    startedAt: STARTED_AT.toISOString(),
+    uptimeSec: Math.round(process.uptime()),
+    cwd: process.cwd(),
+    root: ROOT,
+    assets: assets
+  }, null, 2);
+  res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store' });
+  res.end(body);
 }
 
 /* --------------------------- 启动 --------------------------- */
@@ -100,12 +186,14 @@ const server = http.createServer((req, res) => {
     return handleApi(req, res, pathname, query);
   }
   if (pathname === '/favicon.ico') { res.writeHead(204); return res.end(); }
+  if (pathname === '/__lk_version') { return handleVersion(res); }
   return serveStatic(req, res, pathname);
 });
 
 server.listen(PORT, () => {
   console.log('乐开心本地服务已启动:');
   console.log('  -> http://localhost:' + PORT);
+  console.log('  -> http://localhost:' + PORT + '/__lk_version  （部署自检：目录/启动时间/文件时间）');
   console.log('后端接口前缀: ' + API_PREFIX + '  (路由见 backend/index.js)');
   console.log('数据模式: ' + (process.env.LK_USE_REMOTE === '1' || process.env.LK_USE_REMOTE === 'true'
     ? '真实远端上游（USE_REMOTE=1）'

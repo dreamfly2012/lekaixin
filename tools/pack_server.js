@@ -23,6 +23,7 @@
  */
 const fs = require('fs');
 const path = require('path');
+const { execSync } = require('child_process');
 
 const ROOT = path.join(__dirname, '..');
 const OUT_DIR = path.join(ROOT, 'dist', 'server');
@@ -102,11 +103,31 @@ function main() {
 
   console.log('部署包已生成: ' + OUT_DIR);
   console.log('  文件数: ' + files + ' | 大小: ' + (bytes / 1024 / 1024).toFixed(2) + ' MB');
+
+  // --tar：额外打成压缩包（之前只打印提示、并未真正生成，导致上传的是旧包）
+  if (process.argv.includes('--tar')) {
+    const tarPath = path.join(ROOT, 'dist', 'lekaixin-server.tar.gz');
+    try {
+      fs.rmSync(tarPath, { force: true });
+      // 打包 dist/server 的内容（不带顶层目录），解压后直接得到 server.js 等同级文件
+      // 注意用相对路径：GNU tar 会把 "C:\..." 当成远程主机 (host:path)，报 Cannot connect to C:
+      execSync('tar -czf "../lekaixin-server.tar.gz" .', { cwd: OUT_DIR, stdio: 'pipe' });
+      const kb = (fs.statSync(tarPath).size / 1024).toFixed(0);
+      console.log('  压缩包: dist/lekaixin-server.tar.gz (' + kb + ' KB)');
+    } catch (e) {
+      console.warn('  [warn] 系统 tar 不可用，请手动压缩 dist/server/ 内的文件');
+      if (e && e.stderr) console.warn('  ' + String(e.stderr).trim().slice(0, 300));
+      else if (e && e.message) console.warn('  ' + e.message.slice(0, 300));
+    }
+  }
+
   console.log('');
   console.log('上传到服务器后（宝塔 Node 项目目录）:');
   console.log('  mkdir -p /www/wwwroot/lekaixin');
-  console.log('  # 把 dist/server/ 内容整体上传/解压到该目录');
+  console.log('  tar -xzf lekaixin-server.tar.gz -C /www/wwwroot/lekaixin   # 解压后 server.js 应在该目录下直接可见');
+  console.log('  ls -l /www/wwwroot/lekaixin/server.js /www/wwwroot/lekaixin/index.html   # 确认时间戳/大小已变');
   console.log('  # 启动命令: node server.js   端口: 8080');
+  console.log('  # 重启后自检: curl -s http://127.0.0.1:8080/__lk_version');
 }
 
 main();
