@@ -231,7 +231,16 @@ node tools/build_mobile.js --host https://api.example.com
 
 **方式 A：GitHub Actions 云构建（推荐，无需本地 Android 环境）**
 
-推送代码后到仓库 Actions → 「Build APK」→ Run workflow，填写后端地址即可，产物在 Artifacts 里下载。工作流见 `.github/workflows/build-apk.yml`。
+推送代码后到仓库 **Actions → Build APK → Run workflow**，填两个参数：
+
+| 参数 | 说明 |
+|---|---|
+| `api_host` | 公网后端地址（必填），如 `https://api.lekaixin.com` |
+| `release` | `false`（默认）= 调试包，**自动签名可直接安装**，日常测试用；`true` = 发布包 |
+
+产物在当次 run 的 Artifacts 里下载（`lekaixin-apk-debug` / `lekaixin-apk-release`）。工作流见 `.github/workflows/build-apk.yml`，已配 Gradle 缓存，二次构建约 2-3 分钟。
+
+> `release=true` 但**未配置签名**时，产出的是未签名包（能构建、装不上）。配置方法见下方「4. Release 签名」。
 
 **方式 B：本地 Android Studio（最直观）**
 
@@ -258,9 +267,31 @@ cd mobile/android && ./gradlew assembleDebug    # Windows 用 gradlew.bat
 > SDK 位置：`C:\Users\fujia\scoop\apps\android-clt\current`（已写入 `mobile/android/local.properties` 的 `sdk.dir`，该文件 gitignore）。
 > 国内网络：Gradle 发行包可从腾讯云镜像下载放到 `~/.gradle/wrapper/dists/gradle-8.11.1-all/<hash>/` 下（services.gradle.org 较慢）；已实测构建通过，产物 `mobile/android/app/build/outputs/apk/debug/app-debug.apk`。
 
-### 4. 签名与图标（可选）
+### 4. Release 签名与图标（可选）
 
-debug 包可直接安装测试；上架需 release 签名（Android Studio → Generate Signed Bundle/APK，或配 `signingConfig` 后 `./gradlew assembleRelease`）。图标/启动图可用 `@capacitor/assets` 从 1024×1024 源图生成：
+debug 包自动签名可直接安装；**release 包必须配签名**，否则产出未签名包装不上手机。工作流已内置可选签名：在仓库 **Settings → Secrets and variables → Actions** 加 4 个 Secret，配了就走签名，没配就跳过：
+
+| Secret | 值 |
+|---|---|
+| `LEKAIXIN_KEYSTORE_BASE64` | keystore 文件的 base64 |
+| `LEKAIXIN_KEYSTORE_PASSWORD` | keystore 密码 |
+| `LEKAIXIN_KEY_ALIAS` | 密钥别名 |
+| `LEKAIXIN_KEY_PASSWORD` | 密钥密码（建议与 store 密码一致，避免特殊字符） |
+
+生成 keystore 并转 base64（本机有 JDK 即可，`keytool` 随 JDK 安装）：
+
+```bash
+keytool -genkeypair -v -keystore lekaixin.jks -alias lekaixin \
+  -keyalg RSA -keysize 2048 -validity 10000 \
+  -storepass 你的store密码 -keypass 你的key密码 \
+  -dname "CN=lekaixin, OU=dev, O=lekaixin, L=城市, ST=省份, C=CN"
+
+base64 -w0 lekaixin.jks        # 输出整行 base64，粘贴到 LEKAIXIN_KEYSTORE_BASE64
+```
+
+> **keystore 和密码务必本地备份**——丢了以后就无法更新已上架的应用；Secret 只存在 GitHub，不要提交进仓库。
+
+图标/启动图可用 `@capacitor/assets` 从 1024×1024 源图生成：
 
 ```bash
 npm i -D @capacitor/assets && npx capacitor-assets generate --android

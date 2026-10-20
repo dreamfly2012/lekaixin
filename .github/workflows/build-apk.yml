@@ -1,6 +1,9 @@
 name: Build APK
 
-# 手动触发：Actions -> Build APK -> Run workflow -> 填后端 API 地址
+# 手动触发：Actions -> Build APK -> Run workflow
+#   api_host: 公网后端地址（必填，server.js 部署地址）
+#   release : false = 调试包（自动签名，可直接安装，日常测试用）
+#              true  = 发布包（需在仓库 Secrets 配置签名密钥，否则产出未签名包装不上）
 on:
   workflow_dispatch:
     inputs:
@@ -28,6 +31,17 @@ jobs:
           distribution: temurin
           java-version: '21'
 
+      # Capacitor 版本决定 AGP/Gradle 依赖，package-lock.json 变化即失效
+      - name: 缓存 Gradle 依赖
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: gradle-${{ runner.os }}-${{ hashFiles('mobile/package-lock.json') }}
+          restore-keys: |
+            gradle-${{ runner.os }}-
+
       - name: 组装 Web 资源（注入后端地址）
         run: node tools/build_mobile.js --host "${{ github.event.inputs.api_host }}"
 
@@ -35,11 +49,53 @@ jobs:
         working-directory: mobile
         run: npm install --no-audit --no-fund
 
+      # android/ 工程不入库（.gitignore），每次在 CI 重新生成
       - name: 生成并同步 Android 工程
         working-directory: mobile
         run: |
           npx cap add android
           npx cap sync android
+
+      # Release 签名（可选）：在仓库 Settings -> Secrets 配置以下 4 个值后生效，
+      # 未配置则跳过，Release 产出未签名包（能构建但不能安装）。
+      #   LEKAIXIN_KEYSTORE_BASE64   keystore 文件的 base64（keytool 生成）
+      #   LEKAIXIN_KEYSTORE_PASSWORD keystore 密码
+      #   LEKAIXIN_KEY_ALIAS         密钥别名
+      #   LEKAIXIN_KEY_PASSWORD      密钥密码
+      - name: 配置 Release 签名（可选）
+        if: github.event.inputs.release == 'true'
+        working-directory: mobile/android
+        env:
+          LEKAIXIN_KEYSTORE_BASE64: ${{ secrets.LEKAIXIN_KEYSTORE_BASE64 }}
+          LEKAIXIN_KEYSTORE_PASSWORD: ${{ secrets.LEKAIXIN_KEYSTORE_PASSWORD }}
+          LEKAIXIN_KEY_ALIAS: ${{ secrets.LEKAIXIN_KEY_ALIAS }}
+          LEKAIXIN_KEY_PASSWORD: ${{ secrets.LEKAIXIN_KEY_PASSWORD }}
+        run: |
+          if [ -z "$LEKAIXIN_KEYSTORE_BASE64" ]; then
+            echo "::notice::未配置签名 Secrets，Release 将产出未签名包（无法安装）"
+            exit 0
+          fi
+          echo "$LEKAIXIN_KEYSTORE_BASE64" | base64 -d > "$RUNNER_TEMP/lekaixin.jks"
+          cat >> app/build.gradle <<GRADLE
+
+          // ---- Release 签名（由 workflow 注入，见 .github/workflows/build-apk.yml）----
+          android {
+              signingConfigs {
+                  release {
+                      storeFile file("$RUNNER_TEMP/lekaixin.jks")
+                      storePassword "$LEKAIXIN_KEYSTORE_PASSWORD"
+                      keyAlias "$LEKAIXIN_KEY_ALIAS"
+                      keyPassword "$LEKAIXIN_KEY_PASSWORD"
+                  }
+              }
+              buildTypes {
+                  release {
+                      signingConfig signingConfigs.release
+                  }
+              }
+          }
+          GRADLE
+          echo "::notice::Release 签名配置已注入"
 
       - name: 构建 APK
         working-directory: mobile/android
@@ -50,20 +106,22 @@ jobs:
             ./gradlew assembleDebug
           fi
 
+      # 注意：upload-artifact 的 path 按 GITHUB_WORKSPACE（仓库根）解析，
+      # 且 uses 步骤不吃 working-directory，这里必须输出绝对路径。
       - name: 查找 APK
         id: apk
-        working-directory: mobile/android
         run: |
-          if [ "${{ github.event.inputs.release }}" = "true" ]; then
-            APK=$(find app/build/outputs/apk/release -name "*.apk" | head -1)
-          else
-            APK=$(find app/build/outputs/apk/debug -name "*.apk" | head -1)
+          APK=$(find "$GITHUB_WORKSPACE/mobile/android/app/build/outputs/apk" -name '*.apk' -print -quit)
+          if [ -z "$APK" ]; then
+            echo "::error::未找到 APK 产物，请检查上面的构建日志"
+            exit 1
           fi
           echo "path=$APK" >> "$GITHUB_OUTPUT"
+          echo "找到 APK: $APK"
 
       - name: 上传 APK
         uses: actions/upload-artifact@v4
         with:
-          name: lekaixin-apk
+          name: lekaixin-apk-${{ github.event.inputs.release == 'true' && 'release' || 'debug' }}
           path: ${{ steps.apk.outputs.path }}
           if-no-files-found: error
